@@ -27,7 +27,7 @@ public class Ranker {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        rankQueryTerms=new HashMap<String,Term>(queryTerms);
+        rankQueryTerms=new HashMap<>(queryTerms);
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
@@ -35,7 +35,6 @@ public class Ranker {
         {
             List<String> sortedTerms=new ArrayList(docsTermQuery.values());
             Collections.sort(sortedTerms);
-            int sizezush=sortedTerms.size();
             for(int m=0;m<50;m++)
             {
                 docsToReturn.put(sortedTerms.get(sortedTerms.size()-1-m),docsTermQuery.get(sortedTerms.get(sortedTerms.size()-1-m)));

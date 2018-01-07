@@ -93,11 +93,14 @@ public class GuiPartB extends Application {
 
         //Stemming
         CheckBox stemmerCheck=new CheckBox("Stemming?");
-        GridPane.setConstraints(stemmerCheck, 3, 2);
+        GridPane.setConstraints(stemmerCheck, 2, 0);
 
         //TODO - WRITE THE RUN FUNCTION
         runQuery.setOnAction(e-> runTheQueryF(queryInput.getText(),doc5sentences.isSelected(),stemmerCheck.isSelected()));
 
+        //run button for file of queries
+        Button run2Query = new Button("Run");
+        GridPane.setConstraints(run2Query, 3, 2);
         //file query Label
         Label fileQueryLabel = new Label("Enter path to query files:");
         GridPane.setConstraints(fileQueryLabel, 0, 2);
@@ -148,7 +151,6 @@ public class GuiPartB extends Application {
         Label resetLabel = new Label("To reset the results:");
         GridPane.setConstraints(resetLabel, 0, 4);
 
-
         //save the created files
         Button saveButton = new Button("SAVE");
         GridPane.setConstraints(saveButton, 2, 7);
@@ -194,7 +196,7 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(saveInput, 1, 7);
 
         //Add everything to grid
-        grid.getChildren().addAll(stemmerCheck,loadDictionary,loadLabel,queryLabel,queryInput,doc5sentences, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
+        grid.getChildren().addAll(stemmerCheck,run2Query,loadDictionary,loadLabel,queryLabel,queryInput,doc5sentences, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
                 ,resetButton,resetLabel,saveButton,saveLabel,loadButton,loadLabel2,
                 saveInput,loadInput);
 
@@ -205,9 +207,29 @@ public class GuiPartB extends Application {
     //When button is clicked, handle() gets called
     //Button click is an ActionEvent (also MouseEvents, TouchEvents, etc...)
 
-    public void runTheQueryF(String query, boolean isDoc,boolean withStemm)
-    {
-        if(query==null||query.isEmpty())
+    public void runTheQueryF(String query, boolean isDoc,boolean withStemm) {
+        if (query != null && !query.isEmpty())
+        {
+            long startTime = System.currentTimeMillis();
+            Searcher s;
+            if (!isDoc) {//handle query inserted
+                 s = new Searcher(query, withStemm, isDoc, "");
+
+                long endTime = System.currentTimeMillis();
+                totalTime = endTime - startTime;
+                System.out.println(totalTime / 1000 / 60);
+                show50resultDocs(Ranker.docsToReturn);
+
+
+            } else {//handle docnumber inserted return 5 most important sentences
+
+            }
+
+
+
+
+        }
+        else
         {
             try {
                 AlertBox.display("Missing Input for query", "Error: no query has been written!");
@@ -215,24 +237,6 @@ public class GuiPartB extends Application {
                 System.out.println(" i caught the problem text filed is empty");
             }
         }
-        long startTime = System.currentTimeMillis();
-        if(!isDoc)
-        {//handle query inserted
-           Searcher s= new Searcher(query,withStemm,isDoc,"");
-
-
-        }
-        else
-            {//handle docnumber inserted return 5 most important sentences
-
-            }
-
-
-        long endTime   = System.currentTimeMillis();
-        totalTime = endTime - startTime;
-        System.out.println(totalTime/1000/60);
-        show50resultDocs(Ranker.docsToReturn);
-
     }
 
     /**

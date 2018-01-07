@@ -223,7 +223,7 @@ public class GUI extends Application {
                 //r.allMatchesofdoc.clear();
                 //indexer=new Indexer(P.m_terms,0,pathToPosting);
                 try {
-                    indexer = new Indexer(P.m_terms,0,pathToPosting,472525);//changed to i
+                    indexer = new Indexer(P.m_terms,i,pathToPosting,472525);//changed to i
                     P.m_terms.clear();
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -33,6 +33,9 @@ public class Searcher {
      * @param expand to perform expansion to the query or not
      * @param isDoc to perform doc analyze or not
      */
+    public Searcher(String query,boolean stemming,boolean isDoc) {
+
+    }
     public Searcher(String query,boolean stemming,boolean isDoc,String pathToQueryFile) {
         createMapStopWords();
         p= new Parse(stopwords, stemming);//stemming instead of true
