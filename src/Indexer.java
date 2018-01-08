@@ -607,7 +607,7 @@ public class Indexer
         double idf=computeIdf(df);
         double itf=computeItf(docWith,TermFrequency);
         double weight=Math.pow(idf*itf,2);
-        Parse.allDocs.get(docWith).setDocWeight(weight);
+        Parse.docPosting.get(docWith).setDocWeight(weight);
     }
 
     /**
@@ -619,7 +619,7 @@ public class Indexer
     private double computeItf(String docWith,String termFrequency)
     {
         double t=Double.parseDouble(termFrequency);
-        return t/(Parse.docPosting.get(docWith));
+        return t/((Parse.docPosting).get(docWith).getDocLength());
     }
 
     /**

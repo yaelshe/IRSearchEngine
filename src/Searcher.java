@@ -100,7 +100,7 @@ public class Searcher {
      */
     private void createMapStopWords()
     {
-        String pathofstopword="stop_words.txt";
+        String pathofstopword="C:\\Users\\sheinbey\\Downloads\\stop_words.txt";
         //TODO CHANGE PATH TO STOPWORDS
         String []stops=(readStopword(pathofstopword));
         stopwords = new HashMap<>();

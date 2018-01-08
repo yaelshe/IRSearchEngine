@@ -18,7 +18,7 @@ public class Parse
     public Map<String,Term> m_terms;// the terms to save for the dictionary
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
     private HashMap<String,Document>m_documents; // the documents to do parse on
-    public static HashMap<String,Integer> docPosting;// a map to document name and line in the docFile
+    public static HashMap<String,Document> docPosting;// a map to document name and line in the docFile
     private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
@@ -30,7 +30,6 @@ public class Parse
     public static int countLinePostingDoc=0;// What line are we in the docFile
     String currDoc;
     static double currWeight=0;
-    public static HashMap<String,Document> allDocs;
     public boolean _isQuery=false;
     private String newLine;
 
@@ -58,7 +57,6 @@ public class Parse
         removeapo= Pattern.compile("[\\']");
         removeAll=Pattern.compile("[^\\w && [^.%$]]+");// added the percent back and the dollar
         removeTags=Pattern.compile("<(.*?)>");
-        allDocs=new HashMap();
         try{
             docFile=new File("D:\\PartB+"+"DOCS.txt");
             writerDoc= new BufferedWriter(new FileWriter(docFile));
@@ -84,12 +82,10 @@ public class Parse
             parseDoc(duc.getText(),false);//changed to sed only the text of the document to parsing
             duc.setText("");
             countDoc++;
-            allDocs.put(currDoc,duc);
             duc.setDocLength(docCounterWords);
-
+            docPosting.put(currDoc,duc);
             try {
                 writerDoc.write(currDoc+" #"+docCounterWords+newLine);
-                docPosting.put(currDoc,docCounterWords);
                 //countLinePostingDoc++;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -219,6 +219,7 @@ public class GuiPartB extends Application {
     public void runTheQueryF(String query, boolean isDoc,boolean withStemm) {
         if (query != null && !query.isEmpty())
         {
+            System.out.println("enterted run function");
             long startTime = System.currentTimeMillis();
             Searcher s;
             if (!isDoc) {//handle query inserted
@@ -385,7 +386,7 @@ public class GuiPartB extends Application {
         else
         {
             fi = new FileInputStream(new File(pathToLoad+"\\myDictionary.ser"));
-            fi2 = new FileInputStream(new File(pathToLoad+"myCache.ser"));
+            fi2 = new FileInputStream(new File(pathToLoad+"\\myCache.ser"));
             file3=new FileInputStream(pathToLoad + "\\docPosting.ser");
         }
 
@@ -395,7 +396,7 @@ public class GuiPartB extends Application {
         // Read objects
         Indexer.m_Dictionary = (HashMap<String,TermDic>) oi.readObject();
         Indexer.m_Cache=(HashMap<String,TermCache>) zi.readObject();
-        Ranker.docPosting=(HashMap<String,Document>)z2.readObject();
+        Parse.docPosting=(HashMap<String,Document>)z2.readObject();
         AlertBox.display("finish loading", "finish loading");
     }
 }

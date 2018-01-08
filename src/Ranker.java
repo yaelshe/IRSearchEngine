@@ -13,9 +13,9 @@ import static java.lang.StrictMath.sqrt;
 public class Ranker {
     private String loadDocPosting="";//path to loadDocPosting
     private String loadDoclengths="";//path to loadDocPosting
-    public static HashMap<String,Document> docPosting;
-    HashMap<String,Term> rankQueryTerms;
-    public static String pathToPosting="C:\\Users\\sheinbey\\Downloads\\finalPosting";//todo add path to posting
+    //public static HashMap<String,Document> docPosting;
+    private HashMap<String,Term> rankQueryTerms;
+    public static String pathToPosting="C:\\Users\\sheinbey\\Downloads\\finalPosting.txt";//todo add path to posting
     public static final int N=472525;
     public static int avgDoc=70;
     public static final double k=1.4;
@@ -37,7 +37,7 @@ public class Ranker {
         }
         */
         updateInfoQuery(queryTerms);
-        rankQueryTerms=new HashMap<>(queryTerms);
+
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
@@ -60,6 +60,8 @@ public class Ranker {
     }
     private void updateInfoQuery(HashMap<String,Term> words)
     {
+
+        rankQueryTerms=new HashMap<String,Term>();
         for( String str: words.keySet())
         {
             TermDic t= Indexer.m_Dictionary.get(str);
@@ -79,7 +81,7 @@ public class Ranker {
    }
     private double cosSim(String doc)
     {
-        double docWeight=sqrt(docPosting.get(doc).getDocWeight());//TODO *SQRT Wiq
+        double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight());//TODO *SQRT Wiq
         double mone= sumWijMone(doc);//*weight of terms in query; todo
         if (docWeight!=0)
             return mone/docWeight;
@@ -94,7 +96,7 @@ public class Ranker {
         try {
             fi = new FileInputStream(new File(path + "\\docPosting.ser"));
             ObjectInputStream oi = new ObjectInputStream(fi);
-            docPosting=((HashMap<String,Document>) oi.readObject()) ;
+            Parse.docPosting=((HashMap<String,Document>) oi.readObject()) ;
         }
         catch(Exception e)
         {
@@ -123,7 +125,7 @@ public class Ranker {
         double df= rankQueryTerms.get(term).getNumOfDocIDF();
         //breakToDocsOnlyQuery(line);
         double idf=Math.log(((double)N/df)) / Math.log(2);
-        double lengthDoc= docPosting.get(doc).getDocLength();
+        double lengthDoc= Parse.docPosting.get(doc).getDocLength();
         ans=(getFijFromLine(rankQueryTerms.get(term).getPostingline(),doc)/lengthDoc)*(idf);
         return ans;
     }
@@ -247,7 +249,7 @@ public class Ranker {
         for(String term:rankQueryTerms.keySet())
         {
             answer=answer+(computeIDFbm25(rankQueryTerms.get(term).getNumOfDocIDF()))*
-                    (computebm25SecondPart(getFijFromLine(rankQueryTerms.get(term).getPostingline(),docId),docPosting.get(docId).getDocLength()));
+                    (computebm25SecondPart(getFijFromLine(rankQueryTerms.get(term).getPostingline(),docId),Parse.docPosting.get(docId).getDocLength()));
         }
         return answer;
     }
