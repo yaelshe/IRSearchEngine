@@ -217,6 +217,7 @@ public class GuiPartB extends Application {
     //Button click is an ActionEvent (also MouseEvents, TouchEvents, etc...)
 
     public void runTheQueryF(String query, boolean isDoc,boolean withStemm) {
+        System.out.println(Parse.docPosting.size()+"size of docs in run");
         if (query != null && !query.isEmpty())
         {
             System.out.println("enterted run function");
@@ -397,6 +398,7 @@ public class GuiPartB extends Application {
         Indexer.m_Dictionary = (HashMap<String,TermDic>) oi.readObject();
         Indexer.m_Cache=(HashMap<String,TermCache>) zi.readObject();
         Parse.docPosting=(HashMap<String,Document>)z2.readObject();
+        System.out.println(Parse.docPosting.size()+"size of dics");
         AlertBox.display("finish loading", "finish loading");
     }
 }

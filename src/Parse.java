@@ -50,7 +50,7 @@ public class Parse
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
-        docPosting=new HashMap<>();
+        //docPosting=new HashMap<>();
         doStem=doStemming;
         newLine=System.getProperty("line.separator");
         remove= Pattern.compile("[$%\\.// \\\\\\s]");
@@ -75,6 +75,7 @@ public class Parse
      */
     public void ParseAll(Map<String,Document>documents)
     {
+        int count=0;
         m_documents=new HashMap<>(documents);
         for (Document duc: m_documents.values())
         {
@@ -84,6 +85,7 @@ public class Parse
             countDoc++;
             duc.setDocLength(docCounterWords);
             docPosting.put(currDoc,duc);
+            count++;
             try {
                 writerDoc.write(currDoc+" #"+docCounterWords+newLine);
                 //countLinePostingDoc++;
@@ -91,9 +93,10 @@ public class Parse
                 e.printStackTrace();
             }
             //duc.setLengh(docCounterWords); this line if we keep data base for documents instead of file
-
             docCounterWords=0;
         }
+        System.out.println(count+"counter for docs =============================");
+        System.out.println(docPosting.size()+"finalsize of posting");
         /*try {
            // writerDoc.close();
         } catch (IOException e) {

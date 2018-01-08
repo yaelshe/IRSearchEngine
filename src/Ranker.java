@@ -16,7 +16,7 @@ public class Ranker {
     //public static HashMap<String,Document> docPosting;
     private HashMap<String,Term> rankQueryTerms;
     public static String pathToPosting="C:\\Users\\sheinbey\\Downloads\\finalPosting.txt";//todo add path to posting
-    public static final int N=472525;
+    public static final int N=472525;//468370
     public static int avgDoc=70;
     public static final double k=1.4;
     public static final double b=0.75;
@@ -25,7 +25,9 @@ public class Ranker {
     public static HashMap<String ,Double> docsToReturn;
 
     public Ranker(HashMap<String,Term> queryTerms) {
-        //docPosting= new HashMap<>();
+        System.out.println(Parse.docPosting.size()+ "size of docposting");
+        System.out.println(Indexer.m_Dictionary.size()+ "size of dictionary");
+        System.out.println(Indexer.m_Cache.size()+ "size of cacche");
         docsToReturn= new HashMap<>();
 
        /* try {
