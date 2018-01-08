@@ -73,11 +73,16 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(loadLabel, 0, 0);
         //load button
         Button loadDictionary = new Button("Load FILES");
-        GridPane.setConstraints(loadDictionary, 2, 0);
+        GridPane.setConstraints(loadDictionary, 3, 0);
+
+        //load the created files
+        loadInput = new TextField();
+        loadInput.setPromptText("load path here");
+        GridPane.setConstraints(loadInput, 1, 0);
 
 
         Button browseButton4 = new Button("browse");
-        GridPane.setConstraints(browseButton4, 3, 0);
+        GridPane.setConstraints(browseButton4, 2, 0);
         browseButton4.setOnAction(e-> browserLoad());
 
         //query Label - constrains use (child, column, row)
@@ -101,6 +106,8 @@ public class GuiPartB extends Application {
         CheckBox stemmerCheck=new CheckBox("Stemming?");
         GridPane.setConstraints(stemmerCheck, 4, 0);
         loadDictionary.setOnAction(e -> {
+            if(pathToLoad!=null&&pathToLoad!="")
+            {
             try {
                 loadDictionaryF(stemmerCheck.isSelected());
             } catch (IOException e1) {
@@ -108,7 +115,12 @@ public class GuiPartB extends Application {
             } catch (ClassNotFoundException e1) {
                 e1.printStackTrace();
             }
-        });
+        }
+        else{
+                System.out.println("no path to load");
+            }
+        })
+        ;
 
         //TODO - WRITE THE RUN FUNCTION
         runQuery.setOnAction(e-> runTheQueryF(queryInput.getText(),doc5sentences.isSelected(),stemmerCheck.isSelected()));
@@ -128,7 +140,7 @@ public class GuiPartB extends Application {
         //browse query file  button
         Button queryFileBrowse = new Button("browse");
         GridPane.setConstraints(queryFileBrowse, 2, 2);
-        queryFileBrowse.setOnAction(e-> browseQueryFileF());
+        //queryFileBrowse.setOnAction(e-> browseQueryFileF());//TODO ADD FUNCTION TO QUERY FILE
 /*
         //doc query Label
         Label docQueryLabel = new Label("Enter doc name to query files:");
@@ -188,23 +200,6 @@ public class GuiPartB extends Application {
         browseLoadLocation.setOnAction(e-> browserLoadQueryF());
 
 
-        //load the created files
-        Button loadButton = new Button("LOAD");
-        GridPane.setConstraints(loadButton, 2, 8);
-        Label loadLabel2 = new Label("To load the files:");
-        GridPane.setConstraints(loadLabel2, 0, 8);
-        loadButton.setOnAction(e -> {
-            try {
-                loadFiles(stemmerCheck.isSelected());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (ClassNotFoundException e1) {
-                e1.printStackTrace();
-            }
-        });
-        loadInput = new TextField();
-        loadInput.setPromptText("load path here");
-        GridPane.setConstraints(loadInput, 1, 0);
 
         saveInput = new TextField();
         saveInput.setPromptText("save path here");
@@ -212,8 +207,7 @@ public class GuiPartB extends Application {
 
         //Add everything to grid
         grid.getChildren().addAll(stemmerCheck,run2Query,loadDictionary,loadLabel,queryLabel,queryInput,doc5sentences, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
-                ,resetButton,resetLabel,saveButton,browseButton4,saveLabel,loadButton,loadLabel2,
-                saveInput,loadInput);
+                ,resetButton,resetLabel,saveButton,browseButton4,saveLabel, saveInput,loadInput);
 
         Scene scene = new Scene(grid, 700, 300);
         window.setScene(scene);
@@ -262,6 +256,7 @@ public class GuiPartB extends Application {
         s=selectedFile.getAbsolutePath();
         loadInput.setText(s);
         pathToLoad=s;
+
     }
     /**
      * this method shows the 5 sentences for a document that we found
@@ -278,7 +273,7 @@ public class GuiPartB extends Application {
              i++;
         }
         AlertBox fiveSentences= new AlertBox();
-        fiveSentences.display("5 Most important senteces in ", sb.toString());
+        fiveSentences.display("5 Most important sentences in ", sb.toString());
     }
     private void show50resultDocs(HashMap< String, Double> results)
     {
@@ -292,129 +287,6 @@ public class GuiPartB extends Application {
         }
         boxResults.display("Results:",sbResult.toString());
     }
-    /** public void StartButton (String s1, String s2, boolean box1) throws IOException
-     {
-     Platform.runLater(new Runnable() {
-    @Override
-    public void run() {
-    long startTime = System.currentTimeMillis();
-    if(s1.length()>0&&s2.length()>0)
-    {//the fields are filled
-
-    pathToCorpus=s1;
-    pathToPosting=s2;
-    //change secene to alert and back to the main window to let write again
-    //RadioButton chk = (RadioButton)box1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
-    if(box1) {
-    System.out.println("i checked yes");
-    doStemming=true;
-    }
-    else {
-    doStemming=false;
-    System.out.println("i checked no");
-    }
-    }
-    else{// the fields are missing
-    //change scene to alert and back to the main window to let write again
-    AlertBox.display("Missing Input", "Error: no paths had been written!");
-    }
-    r= new ReadFile("C:\\");
-    int i = 0;
-    while (r.nextFile<r.filesPaths.size())
-    {
-    System.out.println(i);
-    Runtime instance=Runtime.getRuntime();
-    System.out.println((instance.totalMemory())/(1024*1024)+"fd");
-    r.breakToFiles();
-    System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
-    P = new Parser(r.stopword,r.documents,doStemming);
-    P.ParseAll();
-    //indexer=new Indexer(P.m_terms,0,pathToPosting);
-    try {
-    indexer =new Indexer(P.m_terms,i,pathToPosting);//changed to i
-    } catch (IOException e) {
-    e.printStackTrace();
-    System.out.println("here dosnt");
-    }
-    i++;
-    //indexer=new Indexer();//add the m_terms and the path for posting files
-    }
-    try {
-    indexer.mergAllFile();
-    } catch (IOException e) {
-    e.printStackTrace();
-    }
-    dictionary.setItems(getDictionaryTermGui());
-    cache.setItems(getCacheTermGui());
-
-    finish=true;
-    }
-    });
-     }
-     */
-    public ObservableList<String> getDictionaryTermGui()
-    {//get the items for the dictionary
-        dictionary =new ListView<>();
-        ObservableList<String> termsDictionary= FXCollections.observableArrayList();
-        Map<String,TermDic> dict= indexer.m_Dictionary;//change to public for dictionary in indexer
-
-        for(String str: dict.keySet())
-        {
-            String i=dict.get(str).getApperances()+"";
-            termsDictionary.add("Term: "+dict.get(str).getName()+" , Frequency in our corpus: "+i);
-
-        }
-        //**********need to add the words from the dictionary**************
-        return termsDictionary;
-    }
-
-    public ObservableList<CacheTermGui>getCacheTermGui()
-    {//get the items for the dictionary
-        ObservableList<CacheTermGui> termsCache= FXCollections.observableArrayList();
-        cache =new TableView<>();
-        // ObservableList<CacheTermGui> termsDictionary= FXCollections.observableArrayList();
-        Map<String,TermCache>cachesss= indexer.m_Cache;//change to public for dictionary in indexer
-        //**********need to add the words from the dictionary**************
-        for(String str: cachesss.keySet())
-        {
-            //String i="";
-            termsCache.add(new CacheTermGui(str,cachesss.get(str).getFavDocs()));
-        }
-        return termsCache;
-    }
-
-
-    public void displayDictTable()
-    {//opens another window with the dictionary table display
-        //if not working well try listView
-        //https://stackoverflow.com/questions/27414689/a-java-advanced-text-logging-pane-for-large-output
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(dictionary);
-        Scene dictionaryScene=new Scene(vBox);
-        Stage dicwindow = new Stage();
-
-        //Block events to other windows
-        dicwindow.initModality(Modality.APPLICATION_MODAL);
-        dicwindow.setTitle("THE DICTIONARY");
-        dicwindow.setMinWidth(250);
-        dicwindow.setScene(dictionaryScene);
-        dicwindow.show();
-    }
-    public void displayCacheTable()
-    {//opens another window with the dictionary table display
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(cache);
-        Scene cacheScene=new Scene(vBox);
-        Stage cachewindow = new Stage();
-
-        //Block events to other windows
-        cachewindow.initModality(Modality.APPLICATION_MODAL);
-        cachewindow.setTitle("THE CACHE");
-        cachewindow.setMinWidth(250);
-        cachewindow.setScene(cacheScene);
-        cachewindow.show();
-    }
-
 
     public void saveFiles() throws IOException
     {
@@ -429,37 +301,8 @@ public class GuiPartB extends Application {
         oos1.writeObject(indexer.m_Cache);
         oos1.close();
 
-        //FileChooser fc=new FileChooser();
-        //fc.setInitialDirectory((new File("C:\\")));
-        //fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.t));
-        //File selectedFile=fc.showSaveDialog(null);
-        /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
-         if(selectedFiles!=null)
-         {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
-         for(int i=0; i<selectedFiles.size();i++)
-         {
-         listview.getItems().add(selectedFiles.getAbsolutePath());
-         }
-         */
     }
 
-    /** public void browser(){
-     DirectoryChooser dc=new DirectoryChooser();
-     dc.setInitialDirectory((new File("C:\\")));
-     File selectedFile=dc.showDialog(null);
-     s=selectedFile.getAbsolutePath();
-     postingInput.setText(s);
-
-     }
-     public void browserPosting()
-     {
-     DirectoryChooser dc=new DirectoryChooser();
-     dc.setInitialDirectory((new File("C:\\")));
-     File selectedFile=dc.showDialog(null);
-     s=selectedFile.getAbsolutePath();
-     corpusInput.setText(s);
-     }
-     */
     /**
      * this method browse for path to load the dictionary and cache for the program?
      */
@@ -530,26 +373,20 @@ public class GuiPartB extends Application {
                         "size of cache in Bytes:");
 
     }
-    /**
-     *
-     */
 
-    public void browseQueryFileF() {
-
-    }
     public void loadDictionaryF(boolean isStemming) throws IOException, ClassNotFoundException {
         FileInputStream fi,fi2,file3;
         if(isStemming)
         {
-            fi = new FileInputStream(new File(loadInput+"StemmyDictionary.ser"));
-            fi2 = new FileInputStream(new File(loadInput+"StemmyCache.ser"));
-            file3=new FileInputStream(loadInput + "StemmydocPosting.ser");
+            fi = new FileInputStream(new File(pathToLoad+"StemmyDictionary.ser"));
+            fi2 = new FileInputStream(new File(pathToLoad+"StemmyCache.ser"));
+            file3=new FileInputStream(pathToLoad + "StemmydocPosting.ser");
         }
         else
         {
-            fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
-            fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
-            file3=new FileInputStream(loadInput + "docPosting.ser");
+            fi = new FileInputStream(new File(pathToLoad+"\\myDictionary.ser"));
+            fi2 = new FileInputStream(new File(pathToLoad+"myCache.ser"));
+            file3=new FileInputStream(pathToLoad + "\\docPosting.ser");
         }
 
         ObjectInputStream oi = new ObjectInputStream(fi);
@@ -559,26 +396,6 @@ public class GuiPartB extends Application {
         Indexer.m_Dictionary = (HashMap<String,TermDic>) oi.readObject();
         Indexer.m_Cache=(HashMap<String,TermCache>) zi.readObject();
         Ranker.docPosting=(HashMap<String,Document>)z2.readObject();
-
+        AlertBox.display("finish loading", "finish loading");
     }
-
-
-    public void loadFiles(boolean isStemming) throws IOException, ClassNotFoundException {
-
-
-
-
-        /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
-         if(selectedFiles!=null)
-         {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
-         for(int i=0; i<selectedFiles.size();i++)
-         {
-         listview.getItems().add(selectedFiles.getAbsolutePath());
-         }
-         */
-    }
-    public void browseDocF(){
-
-    }
-
 }

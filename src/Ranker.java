@@ -15,7 +15,7 @@ public class Ranker {
     private String loadDoclengths="";//path to loadDocPosting
     public static HashMap<String,Document> docPosting;
     HashMap<String,Term> rankQueryTerms;
-    public static String pathToPosting="";//todo add path to posting
+    public static String pathToPosting="C:\\Users\\sheinbey\\Downloads\\finalPosting";//todo add path to posting
     public static final int N=472525;
     public static int avgDoc=70;
     public static final double k=1.4;
