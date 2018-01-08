@@ -180,7 +180,7 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(loadLabel2, 0, 8);
         loadButton.setOnAction(e -> {
             try {
-                loadFiles();
+                loadFiles(stemmerCheck.isSelected());
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (ClassNotFoundException e1) {
@@ -392,7 +392,7 @@ public class GuiPartB extends Application {
         cachewindow.setScene(cacheScene);
         cachewindow.show();
     }
-    public void loadFiles() throws IOException, ClassNotFoundException {
+    public void loadFiles(boolean isStemming) throws IOException, ClassNotFoundException {
         FileInputStream fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
         FileInputStream fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
         ObjectInputStream oi = new ObjectInputStream(fi);

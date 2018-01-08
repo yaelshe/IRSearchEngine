@@ -122,7 +122,7 @@ public class Ranker {
         double ans=0;
         double df= rankQueryTerms.get(term).getNumOfDocIDF();
         //breakToDocsOnlyQuery(line);
-        double idf=Math.log((N/df)) / Math.log(2);
+        double idf=Math.log(((double)N/df)) / Math.log(2);
         double lengthDoc= docPosting.get(doc).getDocLength();
         ans=(getFijFromLine(rankQueryTerms.get(term).getPostingline(),doc)/lengthDoc)*(idf);
         return ans;
@@ -229,7 +229,7 @@ public class Ranker {
     private double computeIDFbm25(double df)
     {
         double ans=0;
-        ans= N-df+0.5;
+        ans= (double)N-df+0.5;
         ans=ans/(df+0.5);
         ans= log(ans);//TODO CHECK IN WHICH LOG NEED TO BE DONE
         return ans;
