@@ -13,6 +13,8 @@ public class Term
     public Map<String,Integer> docs;//list for the numbers of the
     // documents the word is in and number of appearances in each
     private int totalApperance;
+    public int pointer;
+    public String postingline;
 
     /**
      * this constructor builds the term object
@@ -24,6 +26,31 @@ public class Term
         this.docs = new HashMap<>(docs);
         this.numOfDocIDF =1;
         totalApperance=1;
+    }
+
+    public void setPointer(int pointer) {
+        this.pointer = pointer;
+    }
+
+    public String getPostingline() {
+        return postingline;
+    }
+
+    public void setPostingline(String postingline) {
+        this.postingline = postingline;
+    }
+
+    public int getPointer() {
+
+        return pointer;
+    }
+
+    public Term(String str, int df, int pointer,String line)
+    {
+        _term=str;
+        numOfDocIDF=df;
+        this.pointer=pointer;
+        this.postingline=line;
     }
 
     /**

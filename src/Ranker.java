@@ -1,9 +1,13 @@
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.sqrt;
 
 public class Ranker {
@@ -13,9 +17,10 @@ public class Ranker {
     HashMap<String,Term> rankQueryTerms;
     public static String pathToPosting="";//todo add path to posting
     public static final int N=472525;
-    public static HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
+    public static int avgDoc=70;
+    public HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
                                                         //in the query and the rank for each after computing it
-    public static HashMap<String ,Double> docsToReturn;
+    public  HashMap<String ,Double> docsToReturn;
 
     public Ranker(HashMap<String,Term> queryTerms) {
         docPosting= new HashMap<>();
@@ -27,6 +32,7 @@ public class Ranker {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        updateInfoQuery(queryTerms);
         rankQueryTerms=new HashMap<>(queryTerms);
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
@@ -41,17 +47,29 @@ public class Ranker {
             }
         }
     }
+    private void updateInfoQuery(HashMap<String,Term> words)
+    {
+        for( String str: words.keySet())
+        {
+            TermDic t= Indexer.m_Dictionary.get(str);
+            int pointer=t.getPointer();
+            int df=t.getNumOfDocs();
+            String line=getLineFromPostingFile(pointer);
+            Term term= new Term(str,df,pointer,line);
+            rankQueryTerms.put(str,term);
+        }
+    }
    private void rankAllDocument()
    {
-       for(String str: docsTermQuery.keySet())
+       for(String docId: docsTermQuery.keySet())
        {
-           docsTermQuery.put(str,cosSim(str));//Todo add more to the cosSim formula
+           docsTermQuery.put(docId,cosSim(docId)+computeBM25total(1,1,docId));//Todo add more to the cosSim formula change 1 to k and b
        }
    }
     private double cosSim(String doc)
     {
         double docWeight=sqrt(docPosting.get(doc).getDocWeight());//TODO *SQRT Wiq
-        double mone= sumWijMone(rankQueryTerms,doc);//*weight of terms in query; todo
+        double mone= sumWijMone(doc);//*weight of terms in query; todo
         if (docWeight!=0)
             return mone/docWeight;
         else
@@ -74,7 +92,14 @@ public class Ranker {
 
 
     }
-
+    public static String getLineFromPostingFile(int lineNumber){
+        try (Stream<String> lines = Files.lines(Paths.get(pathToPosting))) {
+            return lines.skip(lineNumber).findFirst().get();
+        } catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
     /**
      * this method compute the wij in mone for word in query and specific document
      * @param term string with the term
@@ -84,14 +109,11 @@ public class Ranker {
     private double wijQueryWordDoc(String term,String doc)
     {
         double ans=0;
-        TermDic t= Indexer.m_Dictionary.get(term);
-        int pointer=t.getPointer();
-        double df=t.getNumOfDocs();
-        String line=getLineFromFile(pointer,pathToPosting);
+        double df= rankQueryTerms.get(term).getNumOfDocIDF();
         //breakToDocsOnlyQuery(line);
         double idf=Math.log((N/df)) / Math.log(2);
         double lengthDoc= docPosting.get(doc).getDocLength();
-        ans=(getFijFromLine(line,doc)/lengthDoc)*(idf);
+        ans=(getFijFromLine(rankQueryTerms.get(term).getPostingline(),doc)/lengthDoc)*(idf);
         return ans;
     }
 
@@ -103,10 +125,7 @@ public class Ranker {
     {
         for(String str: rankQueryTerms.keySet())
         {
-            TermDic t= Indexer.m_Dictionary.get(str);
-            int pointer=t.getPointer();
-            String line2=getLineFromFile(pointer,pathToPosting);
-            docsTermQuery.putAll(breakToDocsId(line2));
+            docsTermQuery.putAll(breakToDocsId(rankQueryTerms.get(str).getPostingline()));
         }
         //docsTermQuery.containsKey()
     }
@@ -135,7 +154,7 @@ public class Ranker {
      * @param rankQueryTerms
      * @return
      */
-    private double sumWijMone(HashMap<String,Term> rankQueryTerms,String doc)
+    private double sumWijMone(String doc)
     {
         double sumWij=0;
         for (String term: rankQueryTerms.keySet()) {
@@ -187,10 +206,8 @@ public class Ranker {
     private double getFijFromLine(String line,String doc)
     {
         double d=0;
-        String t= "TEXT";
-        //String tx="//TEXT";
+
         String sx=line.substring((line.indexOf(doc+":")+doc.length()+1),line.indexOf('}',line.indexOf(doc+":")));
-        //String sx1=line.substring((line.indexOf(t,line.indexOf(doc))+t.length()+1),line.indexOf(tx,line.indexOf(t)));
         try {
             d = Double.parseDouble(sx);
         }
@@ -198,5 +215,30 @@ public class Ranker {
             System.out.println("problem with function getFijFromLine row 129 Ranker ");
         }
         return d;
+    }
+    private double computeIDFbm25(double df)
+    {
+        double ans=0;
+        ans= N-df+0.5;
+        ans=ans/(df+0.5);
+        ans= log(ans);//TODO CHECK IN WHICH LOG NEED TO BE DONE
+        return ans;
+    }
+    private double computebm25SecondPart(double freqTerm,double k,double b, int docLength)
+    {
+        double ans=0;
+        ans=freqTerm*(k+1);
+        ans=ans/(freqTerm+k*(1-b+(b*(avgDoc/docLength))));
+        return ans;
+    }
+    private double computeBM25total(double k,double b,String docId)
+    {
+        double answer=0;
+        for(String term:rankQueryTerms.keySet())
+        {
+            answer=answer+(computeIDFbm25(rankQueryTerms.get(term).getNumOfDocIDF()))*
+                    (computebm25SecondPart(getFijFromLine(rankQueryTerms.get(term).getPostingline(),docId),k,b,docPosting.get(docId).getDocLength()));
+        }
+        return answer;
     }
 }

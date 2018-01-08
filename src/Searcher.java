@@ -33,8 +33,13 @@ public class Searcher {
      * @param expand to perform expansion to the query or not
      * @param isDoc to perform doc analyze or not
      */
-    public Searcher(String query,boolean stemming,boolean isDoc) {
-
+    public Searcher(String query,boolean stemming) {
+        createMapStopWords();
+        p= new Parse(stopwords, stemming);//stemming instead of true
+        p.parseDoc(query,true);
+        queryTerms=  new HashMap<>(p.m_terms);
+        sizeofQuery=queryTerms.size();
+        rank = new Ranker(queryTerms);
     }
     public Searcher(String query,boolean stemming,boolean isDoc,String pathToQueryFile) {
         createMapStopWords();
@@ -66,7 +71,10 @@ public class Searcher {
             }
         }
     }
+    private void Search(HashMap<String,Term> queryWords)
+    {
 
+    }
     /**
      * this method compute the weight of each term in the query
      * @return the weight of the term in the query
