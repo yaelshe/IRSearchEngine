@@ -27,7 +27,7 @@ public class Ranker {
     public Ranker(HashMap<String,Term> queryTerms) {
         System.out.println(Parse.docPosting.size()+ "size of docposting");
         System.out.println(Indexer.m_Dictionary.size()+ "size of dictionary");
-        System.out.println(Indexer.m_Cache.size()+ "size of cacche");
+        System.out.println(Indexer.m_Cache.size()+ "size of cache");
         docsToReturn= new HashMap<>();
 
        /* try {
@@ -49,12 +49,22 @@ public class Ranker {
     {
         if(!docsTermQuery.isEmpty())
         {
-            List<String> sortedTerms=new ArrayList(docsTermQuery.values());
+            PriorityQueue<Map.Entry<String,Double>> pq = new PriorityQueue<>((o1, o2) ->Double.compare(o2.getValue(), o1.getValue()));
+            for (Map.Entry<String,Double> d:docsTermQuery.entrySet()){
+                pq.add(d);
+            }
+            for(int m=0;m<50&&m<pq.size();m++){
+                docsToReturn.put(pq.poll().getKey(),pq.poll().getValue());
+                //pq.poll();
+            }
+            /*List<String> sortedTerms=new ArrayList(docsTermQuery.values());
             Collections.sort(sortedTerms);
             for(int m=0;m<50;m++)
             {
                 docsToReturn.put(sortedTerms.get(sortedTerms.size()-1-m),docsTermQuery.get(sortedTerms.get(sortedTerms.size()-1-m)));
             }
+            */
+            System.out.println(docsToReturn);
             return docsToReturn;
         }
         System.out.println("no docs to return");
@@ -220,13 +230,13 @@ public class Ranker {
     private double getFijFromLine(String line,String doc)
     {
         double d=0;
-
+        int in=line.indexOf(doc+":");
         String sx=line.substring((line.indexOf(doc+":")+doc.length()+1),line.indexOf('}',line.indexOf(doc+":")));
         try {
             d = Double.parseDouble(sx);
         }
         catch(Exception e){
-            System.out.println("problem with function getFijFromLine row 129 Ranker ");
+            return 0;
         }
         return d;
     }

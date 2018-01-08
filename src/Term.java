@@ -105,7 +105,7 @@ public class Term
             String key =docnum;
             String value =docs.get(docnum).toString();
             str=str+"{"+key + ":" + value+"} ";
-            //System.out.print(key + "-" + value+" ");
+            //System.out.print(key + ":" + value+" ");
         }
 
         return str;

@@ -24,6 +24,7 @@ public class Main {
         long startTime = System.currentTimeMillis();
         String line="paribass # 4 &{FT922-10596:111} {FT923-3497:1} {FT923-14404:32} {FT923-10502:1} [4]";
         String line2="paribass # 4 &{FT922-105961:111} {FT923-3497:1} {FT923-14404:32} {FT923-10502:1} [4]";
+
         //ArrayList <String> arr= breakToDocsFrequ(line);
         String s="";
         HashMap<String,Integer> sentences= new HashMap<>();
