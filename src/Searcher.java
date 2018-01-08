@@ -41,16 +41,16 @@ public class Searcher {
         sizeofQuery=queryTerms.size();
         rank = new Ranker(queryTerms);
     }
-    public Searcher(String query,boolean stemming,boolean isDoc,String pathToQueryFile) {
+    public Searcher(String query,boolean stemming,String pathToQueryFile) {
         createMapStopWords();
         p= new Parse(stopwords, stemming);//stemming instead of true
         p.parseDoc(query,true);
         queryTerms=  new HashMap<>(p.m_terms);
         sizeofQuery=queryTerms.size();
-        rank = new Ranker(queryTerms);
         Querys= new ArrayList<>();
 
-        if(pathToQueryFile!=null) {
+        if(pathToQueryFile!=null)
+        {
             queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
             // in case we get a file of more then one query
             try {

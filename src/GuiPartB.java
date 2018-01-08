@@ -213,15 +213,17 @@ public class GuiPartB extends Application {
             long startTime = System.currentTimeMillis();
             Searcher s;
             if (!isDoc) {//handle query inserted
-                 s = new Searcher(query, withStemm, isDoc, "");
+                 s = new Searcher(query, withStemm, "");
 
                 long endTime = System.currentTimeMillis();
                 totalTime = endTime - startTime;
                 System.out.println(totalTime / 1000 / 60);
                 show50resultDocs(Ranker.docsToReturn);
+                Ranker.docsToReturn.clear();
 
 
             } else {//handle docnumber inserted return 5 most important sentences
+
 
             }
 

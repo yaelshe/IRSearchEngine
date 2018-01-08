@@ -18,13 +18,16 @@ public class Ranker {
     public static String pathToPosting="";//todo add path to posting
     public static final int N=472525;
     public static int avgDoc=70;
+    public static final double k=1.4;
+    public static final double b=0.75;
     public HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
                                                         //in the query and the rank for each after computing it
-    public  HashMap<String ,Double> docsToReturn;
+    public static HashMap<String ,Double> docsToReturn;
 
     public Ranker(HashMap<String,Term> queryTerms) {
         docPosting= new HashMap<>();
         docsToReturn= new HashMap<>();
+
         try {
             loadFiles(loadDocPosting);// load the docPosting
         } catch (IOException e) {
@@ -37,6 +40,11 @@ public class Ranker {
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
+
+
+    }
+    public HashMap<String ,Double> returnDocs()
+    {
         if(!docsTermQuery.isEmpty())
         {
             List<String> sortedTerms=new ArrayList(docsTermQuery.values());
@@ -45,7 +53,10 @@ public class Ranker {
             {
                 docsToReturn.put(sortedTerms.get(sortedTerms.size()-1-m),docsTermQuery.get(sortedTerms.get(sortedTerms.size()-1-m)));
             }
+            return docsToReturn;
         }
+        System.out.println("no docs to return");
+        return null;
     }
     private void updateInfoQuery(HashMap<String,Term> words)
     {
@@ -151,7 +162,6 @@ public class Ranker {
     /**
      * this method calculate the sum of all wij for words in the Query and document
      * @param doc
-     * @param rankQueryTerms
      * @return
      */
     private double sumWijMone(String doc)
@@ -224,7 +234,7 @@ public class Ranker {
         ans= log(ans);//TODO CHECK IN WHICH LOG NEED TO BE DONE
         return ans;
     }
-    private double computebm25SecondPart(double freqTerm,double k,double b, int docLength)
+    private double computebm25SecondPart(double freqTerm, int docLength)
     {
         double ans=0;
         ans=freqTerm*(k+1);
@@ -237,7 +247,7 @@ public class Ranker {
         for(String term:rankQueryTerms.keySet())
         {
             answer=answer+(computeIDFbm25(rankQueryTerms.get(term).getNumOfDocIDF()))*
-                    (computebm25SecondPart(getFijFromLine(rankQueryTerms.get(term).getPostingline(),docId),k,b,docPosting.get(docId).getDocLength()));
+                    (computebm25SecondPart(getFijFromLine(rankQueryTerms.get(term).getPostingline(),docId),docPosting.get(docId).getDocLength()));
         }
         return answer;
     }

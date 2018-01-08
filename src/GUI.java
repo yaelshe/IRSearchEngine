@@ -397,14 +397,16 @@ public class GUI extends Application {
 
     public void saveFiles() throws IOException
     {
-        FileOutputStream fos,fos1;
+        FileOutputStream fos,fos1,f1;
         if(doStemming==true) {
             fos = new FileOutputStream(pathToSave + "\\StemmyDictionary.ser");
             fos1 = new FileOutputStream(pathToSave+"\\StemmyCache.ser");
+            f1=new FileOutputStream(pathToSave + "\\StemmydocPosting.ser");
         }
         else {
             fos = new FileOutputStream(pathToSave + "\\myDictionary.ser");
             fos1 = new FileOutputStream(pathToSave+"\\myCache.ser");
+            f1=new FileOutputStream(pathToSave + "\\docPosting.ser");
         }
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(indexer.m_Dictionary);
@@ -412,7 +414,6 @@ public class GUI extends Application {
         ObjectOutputStream oos1 = new ObjectOutputStream(fos1);
         oos1.writeObject(indexer.m_Cache);
         oos1.close();
-        FileOutputStream f1=new FileOutputStream(pathToSave + "\\docPosting.ser");
         ObjectOutputStream obe2 = new ObjectOutputStream(f1);
         obe2.writeObject(P.docPosting);
         obe2.close();
