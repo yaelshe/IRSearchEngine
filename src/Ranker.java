@@ -25,23 +25,23 @@ public class Ranker {
     public static HashMap<String ,Double> docsToReturn;
 
     public Ranker(HashMap<String,Term> queryTerms) {
-        docPosting= new HashMap<>();
+        //docPosting= new HashMap<>();
         docsToReturn= new HashMap<>();
 
-        try {
+       /* try {
             loadFiles(loadDocPosting);// load the docPosting
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        */
         updateInfoQuery(queryTerms);
         rankQueryTerms=new HashMap<>(queryTerms);
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
-
-
+        returnDocs();//todo need to send back
     }
     public HashMap<String ,Double> returnDocs()
     {
@@ -238,7 +238,7 @@ public class Ranker {
     {
         double ans=0;
         ans=freqTerm*(k+1);
-        ans=ans/(freqTerm+k*(1-b+(b*(avgDoc/docLength))));
+        ans=ans/(freqTerm+k*(1-b+(b*(avgDoc/(double)docLength))));
         return ans;
     }
     private double computeBM25total(double k,double b,String docId)

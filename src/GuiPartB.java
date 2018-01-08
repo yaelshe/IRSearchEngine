@@ -34,6 +34,8 @@ public class GuiPartB extends Application {
     TextField docNameInput;
     TextField saveInput;
     TextField queryInput;
+    String pathToLoad="";
+    String query="";
     String s="";
     // String pathToPosting="C:\\Users\\yaels\\Desktop\\11";
     //String pathToCorpus="";
@@ -71,8 +73,12 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(loadLabel, 0, 0);
         //load button
         Button loadDictionary = new Button("Load FILES");
-        GridPane.setConstraints(loadDictionary, 1, 0);
-        loadDictionary.setOnAction(e-> loadDictionaryF());
+        GridPane.setConstraints(loadDictionary, 2, 0);
+
+
+        Button browseButton4 = new Button("browse");
+        GridPane.setConstraints(browseButton4, 3, 0);
+        browseButton4.setOnAction(e-> browserLoad());
 
         //query Label - constrains use (child, column, row)
         Label queryLabel = new Label("Enter query or docId:");
@@ -93,7 +99,16 @@ public class GuiPartB extends Application {
 
         //Stemming
         CheckBox stemmerCheck=new CheckBox("Stemming?");
-        GridPane.setConstraints(stemmerCheck, 2, 0);
+        GridPane.setConstraints(stemmerCheck, 4, 0);
+        loadDictionary.setOnAction(e -> {
+            try {
+                loadDictionaryF(stemmerCheck.isSelected());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
 
         //TODO - WRITE THE RUN FUNCTION
         runQuery.setOnAction(e-> runTheQueryF(queryInput.getText(),doc5sentences.isSelected(),stemmerCheck.isSelected()));
@@ -189,7 +204,7 @@ public class GuiPartB extends Application {
         });
         loadInput = new TextField();
         loadInput.setPromptText("load path here");
-        GridPane.setConstraints(loadInput, 1, 8);
+        GridPane.setConstraints(loadInput, 1, 0);
 
         saveInput = new TextField();
         saveInput.setPromptText("save path here");
@@ -197,7 +212,7 @@ public class GuiPartB extends Application {
 
         //Add everything to grid
         grid.getChildren().addAll(stemmerCheck,run2Query,loadDictionary,loadLabel,queryLabel,queryInput,doc5sentences, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
-                ,resetButton,resetLabel,saveButton,saveLabel,loadButton,loadLabel2,
+                ,resetButton,resetLabel,saveButton,browseButton4,saveLabel,loadButton,loadLabel2,
                 saveInput,loadInput);
 
         Scene scene = new Scene(grid, 700, 300);
@@ -213,14 +228,13 @@ public class GuiPartB extends Application {
             long startTime = System.currentTimeMillis();
             Searcher s;
             if (!isDoc) {//handle query inserted
-                 s = new Searcher(query, withStemm, "");
+                 s = new Searcher(query, withStemm);
 
                 long endTime = System.currentTimeMillis();
                 totalTime = endTime - startTime;
                 System.out.println(totalTime / 1000 / 60);
                 show50resultDocs(Ranker.docsToReturn);
                 Ranker.docsToReturn.clear();
-
 
             } else {//handle docnumber inserted return 5 most important sentences
 
@@ -240,7 +254,15 @@ public class GuiPartB extends Application {
             }
         }
     }
-
+    public void browserLoad()
+    {
+        DirectoryChooser dc=new DirectoryChooser();
+        dc.setInitialDirectory((new File("C:\\")));
+        File selectedFile=dc.showDialog(null);
+        s=selectedFile.getAbsolutePath();
+        loadInput.setText(s);
+        pathToLoad=s;
+    }
     /**
      * this method shows the 5 sentences for a document that we found
      * @param sentences - the sentences that we found
@@ -392,23 +414,7 @@ public class GuiPartB extends Application {
         cachewindow.setScene(cacheScene);
         cachewindow.show();
     }
-    public void loadFiles(boolean isStemming) throws IOException, ClassNotFoundException {
-        FileInputStream fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
-        FileInputStream fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
-        ObjectInputStream oi = new ObjectInputStream(fi);
-        ObjectInputStream zi = new ObjectInputStream(fi2);
-        // Read objects
-        indexer.m_Dictionary = (Map<String,TermDic>) oi.readObject();
-        indexer.m_Cache=(Map<String,TermCache>) zi.readObject();
-        /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
-         if(selectedFiles!=null)
-         {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
-         for(int i=0; i<selectedFiles.size();i++)
-         {
-         listview.getItems().add(selectedFiles.getAbsolutePath());
-         }
-         */
-    }
+
 
     public void saveFiles() throws IOException
     {
@@ -531,8 +537,45 @@ public class GuiPartB extends Application {
     public void browseQueryFileF() {
 
     }
-    public void loadDictionaryF(){
+    public void loadDictionaryF(boolean isStemming) throws IOException, ClassNotFoundException {
+        FileInputStream fi,fi2,file3;
+        if(isStemming)
+        {
+            fi = new FileInputStream(new File(loadInput+"StemmyDictionary.ser"));
+            fi2 = new FileInputStream(new File(loadInput+"StemmyCache.ser"));
+            file3=new FileInputStream(loadInput + "StemmydocPosting.ser");
+        }
+        else
+        {
+            fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
+            fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
+            file3=new FileInputStream(loadInput + "docPosting.ser");
+        }
 
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        ObjectInputStream zi = new ObjectInputStream(fi2);
+        ObjectInputStream z2 = new ObjectInputStream(file3);
+        // Read objects
+        Indexer.m_Dictionary = (HashMap<String,TermDic>) oi.readObject();
+        Indexer.m_Cache=(HashMap<String,TermCache>) zi.readObject();
+        Ranker.docPosting=(HashMap<String,Document>)z2.readObject();
+
+    }
+
+
+    public void loadFiles(boolean isStemming) throws IOException, ClassNotFoundException {
+
+
+
+
+        /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
+         if(selectedFiles!=null)
+         {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
+         for(int i=0; i<selectedFiles.size();i++)
+         {
+         listview.getItems().add(selectedFiles.getAbsolutePath());
+         }
+         */
     }
     public void browseDocF(){
 
