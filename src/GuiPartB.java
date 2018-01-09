@@ -12,6 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -134,7 +135,7 @@ public class GuiPartB extends Application {
         queryFileInput.setPromptText("query file path here");
         GridPane.setConstraints(queryFileInput, 1, 2);
 
-        run2Query.setOnAction(e-> runQueryFiles(stemmerCheck.isSelected(),queryFileInput.getText()));
+        run2Query.setOnAction(e-> runQueryFiles(stemmerCheck.isSelected(),pathToQueryFile));
         //browse query file  button
         Button queryFileBrowse = new Button("browse");
         GridPane.setConstraints(queryFileBrowse, 2, 2);
@@ -255,9 +256,10 @@ public class GuiPartB extends Application {
     }
     public void browserQueryFile()
     {
-        DirectoryChooser dc=new DirectoryChooser();
-        dc.setInitialDirectory((new File("C:\\")));
-        File selectedFile=dc.showDialog(null);
+        FileChooser fc=new FileChooser();
+        //DirectoryChooser dc=new DirectoryChooser();
+        fc.setInitialDirectory((new File("C:\\")));
+        File selectedFile=fc.showOpenDialog(null);
         s=selectedFile.getAbsolutePath();
         queryFileInput.setText(s);
         pathToQueryFile=s;
@@ -385,7 +387,6 @@ public class GuiPartB extends Application {
         Searcher s;
         {//handle query inserted
             s = new Searcher(stem, pathToFile);
-
             long endTime = System.currentTimeMillis();
             totalTime = endTime - startTime;
             System.out.println(totalTime / 1000 / 60);

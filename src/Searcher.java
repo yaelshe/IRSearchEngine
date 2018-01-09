@@ -47,7 +47,7 @@ public class Searcher {
         queryTerms=  new HashMap<>(p.m_terms);
         sizeofQuery=queryTerms.size();
         queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
-        quertcutFirst=Pattern.compile("Number:(?s)(.+?)<narr>");
+        quertcutFirst=Pattern.compile("<num>(?s)(.+?)Narrative:");
         // in case we get a file of more then one query
         try {
             breakToQuerysFile(pathToQueryFile);
