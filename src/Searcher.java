@@ -23,6 +23,8 @@ public class Searcher {
     private Pattern queryCut;//<title><desc>
     private Pattern quertcutFirst;
     BufferedWriter writerDocQuerys;
+    File docFile;
+
     //TODO need to change the path to a file inside the project
 
     /**
@@ -39,8 +41,7 @@ public class Searcher {
         sizeofQuery=queryTerms.size();
         rank = new Ranker(queryTerms);
     }
-    public Searcher(boolean stemming,String pathToQueryFile)
-    {
+    public Searcher(boolean stemming,String pathToQueryFile) throws IOException {
         createMapStopWords();
         p= new Parse(stopwords, stemming);
         Querys= new ArrayList<>();
@@ -48,6 +49,8 @@ public class Searcher {
         sizeofQuery=queryTerms.size();
         queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
         quertcutFirst=Pattern.compile("<num>(?s)(.+?)Narrative:");
+         docFile=new File("D:\\results.txt");
+        writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
         // in case we get a file of more then one query
         try {
             breakToQuerysFile(pathToQueryFile);
@@ -78,8 +81,7 @@ public class Searcher {
         }
     }
     private void writeToFile(String id) throws IOException {
-        File docFile=new File("D:\\results.txt");
-         writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
+
         String newLine = System.getProperty("line.separator");
         for(String docId: rank.docsToReturn)
         {

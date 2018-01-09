@@ -386,7 +386,11 @@ public class GuiPartB extends Application {
         long startTime = System.currentTimeMillis();
         Searcher s;
         {//handle query inserted
-            s = new Searcher(stem, pathToFile);
+            try {
+                s = new Searcher(stem, pathToFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             long endTime = System.currentTimeMillis();
             totalTime = endTime - startTime;
             System.out.println(totalTime / 1000 / 60);

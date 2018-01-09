@@ -40,14 +40,6 @@ public class Ranker {
             e.printStackTrace();
         }
     }
-    public Ranker(HashMap<String,Term> queryTerms,String queId)
-    {
-        docsToReturn= new LinkedList<>();
-        updateInfoQuery(queryTerms);
-        breakToDocsOnlyQuery();
-        rankAllDocument();
-
-    }
     public LinkedList<String> returnDocs() throws IOException {
         if(!docsTermQuery.isEmpty())
         {
@@ -89,6 +81,8 @@ public class Ranker {
         for( String str: words.keySet())
         {
             TermDic t= Indexer.m_Dictionary.get(str);
+            if(t==null)
+                continue;
             int pointer=t.getPointer();
             int df=t.getNumOfDocs();
             String line=getLineFromPostingFile(pointer);
