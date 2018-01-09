@@ -1,8 +1,5 @@
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +19,10 @@ public class Searcher {
     String pathToDocFile="D:\\DOCS.txt";
     public static Map<String,TermDic> m_Dictionary;
     int sizeofQuery;
-    private ArrayList<String> Querys;
+    private ArrayList<Query> Querys;
     private Pattern queryCut;//<title><desc>
+    private Pattern quertcutFirst;
+    BufferedWriter writerDocQuerys;
     //TODO need to change the path to a file inside the project
 
     /**
@@ -40,34 +39,53 @@ public class Searcher {
         sizeofQuery=queryTerms.size();
         rank = new Ranker(queryTerms);
     }
-    public Searcher(String query,boolean stemming,String pathToQueryFile) {
+    public Searcher(boolean stemming,String pathToQueryFile)
+    {
         createMapStopWords();
-        p= new Parse(stopwords, stemming);//stemming instead of true
-        p.parseDoc(query,true);
+        p= new Parse(stopwords, stemming);
+        Querys= new ArrayList<>();
         queryTerms=  new HashMap<>(p.m_terms);
         sizeofQuery=queryTerms.size();
-        Querys= new ArrayList<>();
-
-        if(pathToQueryFile!=null)
+        queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
+        quertcutFirst=Pattern.compile("Number:(?s)(.+?)<narr>");
+        // in case we get a file of more then one query
+        try {
+            breakToQuerysFile(pathToQueryFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(!Querys.isEmpty())
         {
-            queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
-            // in case we get a file of more then one query
+            for(Query que: Querys)
+            {
+                p.m_terms.clear();
+                p.parseDoc(que.getQueryText(),true);
+                queryTerms=  new HashMap<>(p.m_terms);
+                sizeofQuery=queryTerms.size();
+                rank = new Ranker(queryTerms);
+                try {
+                    writeToFile(que.getQueryID());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //rank.printResults();
+            }
             try {
-                breakToQuerysFile(pathToQueryFile);
+                writerDocQuerys.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if(!Querys.isEmpty())
-            {
-                for(String que: Querys)
-                {
-                    p.parseDoc(que,true);
-                    queryTerms=  new HashMap<>(p.m_terms);
-                    sizeofQuery=queryTerms.size();
-                    rank = new Ranker(queryTerms);
-                    //rank.printResults();
-                }
-            }
+        }
+    }
+    private void writeToFile(String id) throws IOException {
+        File docFile=new File("D:\\results.txt");
+         writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
+        String newLine = System.getProperty("line.separator");
+        for(String docId: rank.docsToReturn)
+        {
+            docId=docId.replaceAll(" ","");
+            String towrite=id+" 0 "+docId+" 1 1 mt"+newLine;
+            writerDocQuerys.write(towrite);
         }
     }
     /**
@@ -154,16 +172,26 @@ public class Searcher {
         reader.close();
         Querys=getQuerysFromText(fileData.toString());
     }
-    private ArrayList<String> getQuerysFromText(String text)
+    private ArrayList<Query> getQuerysFromText(String text)
     {
         ArrayList <String> allMatchesofQuery ;
+        ArrayList<Query> a=new ArrayList<>();
+        String queryiD,query,queryDesc;
         //String regex = "<title>(?s)(.+?)<desc>";
         allMatchesofQuery = new ArrayList <>();
-        Matcher m = queryCut.matcher(text);
+        Matcher m = quertcutFirst.matcher(text);
         while (m.find()) {
-            allMatchesofQuery.add(m.group(1).toString().trim());
+            allMatchesofQuery.add(m.group(1));
         }
-        return allMatchesofQuery;
+        for(String str: allMatchesofQuery)
+        {
+             queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>"));
+             query=str.substring(str.indexOf("<title>")+8,str.indexOf("<desc>"));
+             queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
+             Query q= new Query(queryiD,query,queryDesc);
+             a.add(q);
+        }
+        return a;
     }
 
 }

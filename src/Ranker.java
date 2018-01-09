@@ -29,15 +29,6 @@ public class Ranker {
         System.out.println(Indexer.m_Dictionary.size()+ "size of dictionary");
         System.out.println(Indexer.m_Cache.size()+ "size of cache");
         docsToReturn= new LinkedList<>();
-
-       /* try {
-            loadFiles(loadDocPosting);// load the docPosting
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        */
         updateInfoQuery(queryTerms);
 
         docsTermQuery= new HashMap<>();
@@ -48,6 +39,14 @@ public class Ranker {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public Ranker(HashMap<String,Term> queryTerms,String queId)
+    {
+        docsToReturn= new LinkedList<>();
+        updateInfoQuery(queryTerms);
+        breakToDocsOnlyQuery();
+        rankAllDocument();
+
     }
     public LinkedList<String> returnDocs() throws IOException {
         if(!docsTermQuery.isEmpty())

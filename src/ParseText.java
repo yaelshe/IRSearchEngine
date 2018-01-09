@@ -1,6 +1,8 @@
 import sun.util.locale.ParseStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -11,7 +13,20 @@ public class ParseText
     public HashMap<Integer,HashMap<String,TermDic>> m_Sentence;
     public int [] SentenceLength;
     public int SentenceId;
+    public List<String> mysentence;
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
+
+    //private ArrayList<String> beforeTerms;
+    //private Map<String,Document>m_documents;
+    /* private final Regex r=new Regex(",$#!&=?<^>(){}\":;+|\\[\\]");
+     private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
+     {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
+     ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
+     put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
+     ;}
+     };
+     */
+
     private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
@@ -33,15 +48,40 @@ public class ParseText
         this.mytextdoc=text;
         this.currDoc=docid;
         // m_documents=new HashMap<>(documents);
-        doStem=doStemming;
+        doStem=true;
     }
     public void ParseAll()
     {
-        String []mysentence=mytextdoc.split("\\. ");
-        SentenceLength= new int[mysentence.length];
-        for(int i=0;i<mysentence.length;i++) {
+        List<String> l= new ArrayList<>();
+        l.add("YIM");
+        l.add("U.S");
+        l.add(" Mr");
+        l.add(" Ms");
+        l.add(" Lr");
+        l.add("Col");
+        String []mysentence1=mytextdoc.split("\\. ");
+        String s1,s2;
+        this.mysentence= new ArrayList<>();
+        for(int ii=0;ii<mysentence1.length;ii++){
+            s1=mysentence1[ii].substring(mysentence1[ii].length()-3);
+            //System.out.println(ii+"."+s15);
+            if(l.contains(s1)){
+                if (ii+1<mysentence1.length) {
+                    s2 = mysentence1[ii] + mysentence1[ii + 1];
+                    mysentence.add(s2);
+                    ii++;
+                }
+            }
+            //System.out.println(ii+"."+mysentence1[ii]);
+        }
+        //
+        //List<String> lnew=new ArrayList<>();
+        //String []mysentence=mytextdoc.split("\\. ");
+
+        SentenceLength= new int[mysentence.size()];
+        for(int i=0;i<mysentence.size();i++) {
             SentenceId=i+1;
-            parseSentence(mysentence[i]);
+            parseSentence(mysentence.get(i));
         }
 
     }

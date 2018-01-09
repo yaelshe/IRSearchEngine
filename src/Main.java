@@ -25,6 +25,23 @@ public class Main {
         String line="paribass # 4 &{FT922-10596:111} {FT923-3497:1} {FT923-14404:32} {FT923-10502:1} [4]";
         String line2="paribass # 4 &{FT922-105961:111} {FT923-3497:1} {FT923-14404:32} {FT923-10502:1} [4]";
 
+        String str="<num> Number: 351 \n" +
+                "<title> Falkland petroleum exploration \n" +
+                "\n" +
+                "<desc> Description: \n" +
+                "What information is available on petroleum exploration in \n" +
+                "the South Atlantic near the Falkland Islands?\n" +
+                "\n" +
+                "<narr> Narrative: \n" +
+                "Any document discussing petroleum exploration in the\n" +
+                "South Atlantic near the Falkland Islands is considered\n" +
+                "relevant.  Documents di";
+        String queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>"));
+        String query=str.substring(str.indexOf("<title>")+8,str.indexOf("<desc>"));
+        String queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
+        System.out.println(queryiD.trim() + "  id");
+        System.out.println(query.trim()+ "  the query");
+        System.out.println(queryDesc.trim()+ " the desc");
         //ArrayList <String> arr= breakToDocsFrequ(line);
         String s="";
         HashMap<String,Integer> sentences= new HashMap<>();

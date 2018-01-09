@@ -16,10 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This Class activate the Gui for Part B  of the search engine
@@ -36,6 +33,7 @@ public class GuiPartB extends Application {
     TextField saveInput;
     TextField queryInput;
     String pathToLoad="";
+    String pathToQueryFile="";
     String query="";
     String s="";
     // String pathToPosting="C:\\Users\\yaels\\Desktop\\11";
@@ -81,10 +79,9 @@ public class GuiPartB extends Application {
         loadInput.setPromptText("load path here");
         GridPane.setConstraints(loadInput, 1, 0);
 
-
         Button browseButton4 = new Button("browse");
         GridPane.setConstraints(browseButton4, 2, 0);
-        browseButton4.setOnAction(e-> browserLoad());
+        browseButton4.setOnAction(e-> browserLoadQueryF());
 
         //query Label - constrains use (child, column, row)
         Label queryLabel = new Label("Enter query or docId:");
@@ -122,13 +119,12 @@ public class GuiPartB extends Application {
             }
         })
         ;
-
-
         runQuery.setOnAction(e-> runTheQueryF(queryInput.getText(),doc5sentences.isSelected(),stemmerCheck.isSelected()));
 
         //run button for file of queries
         Button run2Query = new Button("Run");
         GridPane.setConstraints(run2Query, 3, 2);
+
         //file query Label
         Label fileQueryLabel = new Label("Enter path to query files:");
         GridPane.setConstraints(fileQueryLabel, 0, 2);
@@ -138,39 +134,11 @@ public class GuiPartB extends Application {
         queryFileInput.setPromptText("query file path here");
         GridPane.setConstraints(queryFileInput, 1, 2);
 
+        run2Query.setOnAction(e-> runQueryFiles(stemmerCheck.isSelected(),queryFileInput.getText()));
         //browse query file  button
         Button queryFileBrowse = new Button("browse");
         GridPane.setConstraints(queryFileBrowse, 2, 2);
-        //queryFileBrowse.setOnAction(e-> browseQueryFileF());//TODO ADD FUNCTION TO QUERY FILE
-/*
-        //doc query Label
-        Label docQueryLabel = new Label("Enter doc name to query files:");
-        GridPane.setConstraints(docQueryLabel, 0, 3);
-
-        //query file path Input
-        docNameInput = new TextField();
-        docNameInput.setPromptText("doc name here");
-        GridPane.setConstraints(docNameInput, 1, 3);
-
-        //browse query file  button
-        Button docBrowse = new Button("browse");
-        GridPane.setConstraints(docBrowse, 2, 3);
-        docBrowse.setOnAction(e-> browseDocF());
-        */
-/**
- //Start
- Button startButton = new Button("START");
- GridPane.setConstraints(startButton, 1, 3);
- startButton.setOnAction(e -> {
- try {
- StartButton(postingInput.getText(), corpusInput.getText(), stemmerCheck.isSelected());
- } catch (IOException e1) {
- e1.printStackTrace();
- }
- });
- startButton.disableProperty().bind(Bindings.createBooleanBinding( () -> !((postingInput.getText()!=null && corpusInput.getText()!=null)),
- postingInput.textProperty(), corpusInput.textProperty()));
- */
+        queryFileBrowse.setOnAction(e-> browserQueryFile());//TODO ADD FUNCTION TO QUERY FILE
 
         //RESET
         Button resetButton = new Button("RESET");
@@ -196,11 +164,9 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(browseSaveLocation, 2, 7);
         browseSaveLocation.setOnAction(e-> browserSaveQueryF());
 
-        Button browseLoadLocation = new Button("browse");
-        GridPane.setConstraints(browseLoadLocation, 2, 8);
-        browseLoadLocation.setOnAction(e-> browserLoadQueryF());
-
-
+        //Button browseLoadLocation = new Button("browse");
+        //.setConstraints(browseLoadLocation, 2, 8);
+        //browseLoadLocation.setOnAction(e-> browserLoadQueryF());
 
         saveInput = new TextField();
         saveInput.setPromptText("save path here");
@@ -253,13 +219,11 @@ public class GuiPartB extends Application {
                 }
                 String sx =ss.substring(ss.indexOf(query));
                 sx=sx.substring(sx.indexOf("<TEXT>")+7,sx.indexOf("</TEXT>"));
-                HashMap<String,String> m_StopWords1=new HashMap<>();
-                String []mysentence1=sx.split("\\. ");
                 //String sx="how you to do many how to you how. how many how. i am the man who. ttdk. do you want to go. do me how. ibrahem. yousef. sarsour";
                 Searcher.createMapStopWords();
-
                 ParseText P= new ParseText(Searcher.stopwords, sx,query,withStemm);
                 P.ParseAll();
+                List <String> mysentence1=P.mysentence;
                 //HashMap<String,TermDic> m_terms1=P.m_terms;//**
                 //HashMap<Integer,HashMap<String,TermDic>> m_Sentence1=P.m_Sentence;
                 //int[] S=P.SentenceLength;
@@ -270,7 +234,7 @@ public class GuiPartB extends Application {
                 List<Integer> l= R.TopFive();
                 HashMap<String,Integer> top5=new HashMap<>();
                 for (int t=0;t<l.size();t++){
-                    top5.put(mysentence1[l.get(t)-1],t+1);
+                    top5.put(mysentence1.get(l.get(t)-1),t+1);
                 }
                 show5sentences(top5);
 
@@ -289,14 +253,14 @@ public class GuiPartB extends Application {
             }
         }
     }
-    public void browserLoad()
+    public void browserQueryFile()
     {
         DirectoryChooser dc=new DirectoryChooser();
         dc.setInitialDirectory((new File("C:\\")));
         File selectedFile=dc.showDialog(null);
         s=selectedFile.getAbsolutePath();
-        loadInput.setText(s);
-        pathToLoad=s;
+        queryFileInput.setText(s);
+        pathToQueryFile=s;
 
     }
     /**
@@ -354,6 +318,7 @@ public class GuiPartB extends Application {
         File selectedFile=dc.showDialog(null);
         s=selectedFile.getAbsolutePath();
         loadInput.setText(s);
+        pathToLoad=s;
     }
 
     /**
@@ -414,7 +379,18 @@ public class GuiPartB extends Application {
                         "size of cache in Bytes:");
 
     }
+    private void runQueryFiles(boolean stem,String pathToFile)
+    {
+        long startTime = System.currentTimeMillis();
+        Searcher s;
+        {//handle query inserted
+            s = new Searcher(stem, pathToFile);
 
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            System.out.println(totalTime / 1000 / 60);
+        }
+    }
     public void loadDictionaryF(boolean isStemming) throws IOException, ClassNotFoundException {
         FileInputStream fi,fi2,file3;
         if(isStemming)
