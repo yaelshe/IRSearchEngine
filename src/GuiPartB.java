@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -122,7 +123,7 @@ public class GuiPartB extends Application {
         })
         ;
 
-        //TODO - WRITE THE RUN FUNCTION
+
         runQuery.setOnAction(e-> runTheQueryF(queryInput.getText(),doc5sentences.isSelected(),stemmerCheck.isSelected()));
 
         //run button for file of queries
@@ -233,7 +234,45 @@ public class GuiPartB extends Application {
                 Ranker.docsToReturn.clear();
 
             } else {//handle docnumber inserted return 5 most important sentences
+                //System.out.println(tt.get("FBIS3-49"));
+                String ss= null;
+                try {
+                    String pats=pathToLoad+"\\";
+                    if(Parse.docPosting.containsKey(query))
+                        System.out.println("contains");
+                    else
+                    {
+                        query=" "+query+" ";
+                    }
+                    String pat2= Parse.docPosting.get(query).getDirectoryPathDoc();
+                    //String pat2= ;
+                    System.out.println("123");
+                    ss = ReadFile.readFileAsString(pat2);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String sx =ss.substring(ss.indexOf(query));
+                sx=sx.substring(sx.indexOf("<TEXT>")+7,sx.indexOf("</TEXT>"));
+                HashMap<String,String> m_StopWords1=new HashMap<>();
+                String []mysentence1=sx.split("\\. ");
+                //String sx="how you to do many how to you how. how many how. i am the man who. ttdk. do you want to go. do me how. ibrahem. yousef. sarsour";
+                Searcher.createMapStopWords();
 
+                ParseText P= new ParseText(Searcher.stopwords, sx,query,withStemm);
+                P.ParseAll();
+                //HashMap<String,TermDic> m_terms1=P.m_terms;//**
+                //HashMap<Integer,HashMap<String,TermDic>> m_Sentence1=P.m_Sentence;
+                //int[] S=P.SentenceLength;
+                System.out.println(P.m_Sentence.size());
+                System.out.println(P.m_terms.size());
+                //System.out.println(P.SentenceLength[3]);
+                RankerSentence R= new RankerSentence( P.m_Sentence,P.m_terms,P.SentenceLength);
+                List<Integer> l= R.TopFive();
+                HashMap<String,Integer> top5=new HashMap<>();
+                for (int t=0;t<l.size();t++){
+                    top5.put(mysentence1[l.get(t)-1],t+1);
+                }
+                show5sentences(top5);
 
             }
 
@@ -277,13 +316,13 @@ public class GuiPartB extends Application {
         AlertBox fiveSentences= new AlertBox();
         fiveSentences.display("5 Most important sentences in ", sb.toString());
     }
-    private void show50resultDocs(HashMap< String, Double> results)
+    private void show50resultDocs(List< String> results)
     {
         AlertBox boxResults= new AlertBox();
         StringBuilder sbResult= new StringBuilder();
-        sbResult= sbResult.append("we found "+results.size()+"relevent documents"+"\n");
+        sbResult= sbResult.append("we found "+results.size()+" relevent documents"+"\n");
         sbResult= sbResult.append("Running query time: "+totalTime+"\n");
-        for (String str : results.keySet())
+        for (String str: results)
         {
             sbResult=sbResult.append(str+"\n");
         }

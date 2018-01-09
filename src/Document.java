@@ -17,6 +17,7 @@ public class Document implements Serializable
     public final String id ;
     public double docWeight;
     public String directoryPathDoc;//Todo need to add through readFile
+    private static final long serialVersionUID = -4985806624272702150L;
 
 
     /**
@@ -35,6 +36,14 @@ public class Document implements Serializable
         this.id=id;
         docWeight=0;
         directoryPathDoc=pathDoc;
+    }
+
+    public String getDirectoryPathDoc() {
+        return directoryPathDoc;
+    }
+
+    public void setDirectoryPathDoc(String directoryPathDoc) {
+        this.directoryPathDoc = directoryPathDoc;
     }
 
     public void setDocLength(int docLength) {

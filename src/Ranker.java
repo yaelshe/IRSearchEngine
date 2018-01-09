@@ -22,13 +22,13 @@ public class Ranker {
     public static final double b=0.75;
     public HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
                                                         //in the query and the rank for each after computing it
-    public static HashMap<String ,Double> docsToReturn;
+    public static LinkedList<String> docsToReturn;
 
     public Ranker(HashMap<String,Term> queryTerms) {
         System.out.println(Parse.docPosting.size()+ "size of docposting");
         System.out.println(Indexer.m_Dictionary.size()+ "size of dictionary");
         System.out.println(Indexer.m_Cache.size()+ "size of cache");
-        docsToReturn= new HashMap<>();
+        docsToReturn= new LinkedList<>();
 
        /* try {
             loadFiles(loadDocPosting);// load the docPosting
@@ -43,10 +43,13 @@ public class Ranker {
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
-        returnDocs();//todo need to send back
+        try {
+            returnDocs();//todo need to send back
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    public HashMap<String ,Double> returnDocs()
-    {
+    public LinkedList<String> returnDocs() throws IOException {
         if(!docsTermQuery.isEmpty())
         {
             PriorityQueue<Map.Entry<String,Double>> pq = new PriorityQueue<>((o1, o2) ->Double.compare(o2.getValue(), o1.getValue()));
@@ -54,7 +57,7 @@ public class Ranker {
                 pq.add(d);
             }
             for(int m=0;m<50&&m<pq.size();m++){
-                docsToReturn.put(pq.poll().getKey(),pq.poll().getValue());
+                docsToReturn.add(pq.poll().getKey());
                 //pq.poll();
             }
             /*List<String> sortedTerms=new ArrayList(docsTermQuery.values());
@@ -65,6 +68,17 @@ public class Ranker {
             }
             */
             System.out.println(docsToReturn);
+            File docFile=new File("D:\\results.txt");
+            BufferedWriter writerDoc= new BufferedWriter(new FileWriter(docFile));
+            String newLine = System.getProperty("line.separator");
+            for(String docId: docsToReturn)
+            {
+                docId=docId.replaceAll(" ","");
+                System.out.println("*"+docId+"*");
+                String towrite="351 0 "+docId+" 1 1 mt"+newLine;
+                writerDoc.write(towrite);
+            }
+            writerDoc.close();
             return docsToReturn;
         }
         System.out.println("no docs to return");
@@ -72,7 +86,6 @@ public class Ranker {
     }
     private void updateInfoQuery(HashMap<String,Term> words)
     {
-
         rankQueryTerms=new HashMap<String,Term>();
         for( String str: words.keySet())
         {

@@ -30,8 +30,7 @@ public class Searcher {
      * this is the constructor get the query and perform parse on it to insert to queryTerms
      * @param query- the string received from the user
      * @param stemming to perform stemming or not
-     * @param expand to perform expansion to the query or not
-     * @param isDoc to perform doc analyze or not
+
      */
     public Searcher(String query,boolean stemming) {
         createMapStopWords();
@@ -71,10 +70,6 @@ public class Searcher {
             }
         }
     }
-    private void Search(HashMap<String,Term> queryWords)
-    {
-
-    }
     /**
      * this method compute the weight of each term in the query
      * @return the weight of the term in the query
@@ -98,7 +93,7 @@ public class Searcher {
     /**
      * this
      */
-    private void createMapStopWords()
+    public static void createMapStopWords()
     {
         String pathofstopword="C:\\Users\\sheinbey\\Downloads\\stop_words.txt";
         //TODO CHANGE PATH TO STOPWORDS
@@ -115,7 +110,7 @@ public class Searcher {
      * @param S - the path to the stop word file
      * @return - array of stop word
      */
-    private  String [] readStopword(String S){
+    private  static String [] readStopword(String S){
         //make a string Array from all the StopWords
         String everything="";
         try {

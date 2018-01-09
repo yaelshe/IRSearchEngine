@@ -140,7 +140,7 @@ public class ReadFile
      * @return string for all of the text in the file
      * @throws IOException
      */
-    private String readFileAsString(String filePath) throws IOException
+    public static String readFileAsString(String filePath) throws IOException
     {//pull all the text from the file
 
         StringBuffer fileData = new StringBuffer();
