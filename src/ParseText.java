@@ -40,6 +40,13 @@ public class ParseText
     String currDoc;
     private String mytextdoc;
 
+    /**
+     *
+     * @param m_StopWords -the stop words
+     * @param text-the text was have to parse
+     * @param docid-id of the doc
+     * @param doStemming-weather to preform stemming(true) or not(false)
+     */
     public ParseText(Map<String,String> m_StopWords, String text,String docid,boolean doStemming) {
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
@@ -50,6 +57,10 @@ public class ParseText
         // m_documents=new HashMap<>(documents);
         doStem=true;
     }
+
+    /**
+     * function parsing all the sentence in the text
+     */
     public void ParseAll()
     {
         List<String> l= new ArrayList<>();
@@ -86,6 +97,10 @@ public class ParseText
 
     }
 
+    /**
+     *function that decodes each sentence that it receives from parseall, and devides it for terms, and then it puts it in m_terms and m_Sentence
+     * @param text-the sentence
+     */
     public void parseSentence(String text)
     {
         //String text=doc.getText().replaceAll("<(.*?)>","")
@@ -117,7 +132,7 @@ public class ParseText
             //&&)
             {
                 if (!m_StopWords.containsKey(curTerm))
-                {//maybe remove ***??????
+                {//maybe remove *??????
                     /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
                      {
                      termsDoc[i]=handleMakaf(termsDoc[i]);
@@ -232,7 +247,14 @@ public class ParseText
         m_Sentence.put(SentenceId,mytext_terms);
         //return mytext_terms;
     }
-
+    /**
+     * this method get the string of a term to insert to the tow terms Maps
+     * perform the stemming if the boolean field is true
+     * check for stop words
+     * and finaly insert to terms
+     *this function  counts all of the values which can help us afterwards, like (dfi and fij)
+     * @param str - the word to be insert to terms
+     */
     private void addToTermtext(String str,HashMap<String,TermDic> mytext_terms)
     {
         String strafter;
@@ -290,7 +312,11 @@ public class ParseText
         }
 
     }
-
+    /**
+     * this function handle the first role we added which is to save words with the ' as prefix and also the hole word without it
+     * @param str- the string that contain the '
+     * @return the string without the '
+     */
     private String handleApostrophe (String str,HashMap mytext_terms)
     {
         if (str.contains("\'")&&!m_StopWords.containsKey(str.toLowerCase())) {
@@ -306,6 +332,7 @@ public class ParseText
         }
         return str;
     }
+
     public boolean isNumber(String str) {
         // a function to check if the term is a number
         // System.out.println(str);
@@ -331,6 +358,12 @@ public class ParseText
         }
         return true;
     }
+    /**
+     * this function checks if the two string that is given to her contains months names
+     * @param s1-
+     * @param s2-
+     * @return if o ne of the string is a name of a month
+     */
     private boolean isDate(String s1,String s2)
     {
         // a function to check if the term is part of a date
@@ -340,6 +373,13 @@ public class ParseText
         }
         return false;
     }
+    /**
+     * this method handle the string which is a number to change number from 83.333333 to 83.33
+     * remove th at the end
+     * and the percent symbol %
+     * @param s a string which is a number that needs to be altered
+     * @return - the number in a string without th % or more then 2 digits after the dot
+     */
     private String numbersHandler(String s) {
         //change number from 83.333333 to 83.33
         //String tt = "3.5555";
@@ -367,6 +407,14 @@ public class ParseText
             s=s+" percent";
         return  s;
     }
+    /**
+     * this function handle the strings to create a date in this Pattern 00/00/00 or 00/00 that we were obligated in the rules
+     * @param s1-
+     * @param s2-
+     * @param s3-
+     * @param s4-
+     * @return the new string of a date in 00/00 or 00/00/00
+     */
     public String dateHandler(String s1,String s2,String s3,String s4){//(termsDoc[i - 1], termsDoc[i], termsDoc[i + 1], termsDoc[i + 2])
         //change the format of the date in the text to the rule we have
         String day="";
@@ -423,9 +471,12 @@ public class ParseText
                 }
             }
         }
-
     }
-
+    /**
+     * this method change day structure to 00 structure
+     * @param d
+     * @return
+     */
     private String cmpToDay(int d){
         String day = "";
         if (d<10)
@@ -438,6 +489,12 @@ public class ParseText
         }
         return  day;
     }
+    /**
+     * this method remove all the parts from the words that we don't need to save
+     * remove almost every Punctuation symbol
+     * @param str- the term to be first handle from extra punctuation symbol
+     * @return the altered term
+     */
     public String removeExtra(String str)
     {
         str=str.replaceAll("[,#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]","");
@@ -467,9 +524,16 @@ public class ParseText
         }
         return str;
     }
-    //*******************
+    //*******
 
-
+    /**
+     * this string handle words that appeared with a Capital letter and check for the words after it
+     * to check if its a name or a phrase we need to save as a term together
+     * @param s1- first word to have Capital letter
+     * @param s2 - second word to check if also have capital letter
+     *
+     * @return the term we need to save if more then one word starts with capital letter
+     */
     public  int capitalTerm_text(String s1, String s2,String s3,HashMap mytext_terms) {
         //ADD 4 STRING TO FUNC RETURN NUMBER OF WORDS IN phrase
         //List<String> phrase = new LinkedList<String>();
@@ -506,5 +570,5 @@ public class ParseText
         }
         return count;
     }
-//******************************was changed
+//************was changed
 }

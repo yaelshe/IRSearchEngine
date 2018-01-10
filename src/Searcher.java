@@ -24,6 +24,7 @@ public class Searcher {
     private Pattern quertcutFirst;
     BufferedWriter writerDocQuerys;
     File docFile;
+    public static ArrayList<String> allResults;
 
     //TODO need to change the path to a file inside the project
 
@@ -35,22 +36,31 @@ public class Searcher {
      */
     public Searcher(String query,boolean stemming) {
         createMapStopWords();
+        allResults=new ArrayList<>();
         p= new Parse(stopwords, stemming);//stemming instead of true
         p.parseDoc(query,true);
         queryTerms=  new HashMap<>(p.m_terms);
         sizeofQuery=queryTerms.size();
         rank = new Ranker(queryTerms);
+        String newLine = System.getProperty("line.separator");
+        for(String docId: rank.docsToReturn) {
+            docId = docId.replaceAll(" ", "");
+            String towrite =222 + " 0 " + docId + " 1 1 mt" + newLine;
+            allResults.add(towrite);
+        }
     }
     public Searcher(boolean stemming,String pathToQueryFile) throws IOException {
         createMapStopWords();
+        allResults=new ArrayList<>();
         p= new Parse(stopwords, stemming);
         Querys= new ArrayList<>();
-        queryTerms=  new HashMap<>(p.m_terms);
-        sizeofQuery=queryTerms.size();
+        //queryTerms=  new HashMap<>(p.m_terms);
+        //sizeofQuery=queryTerms.size();
         queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
         quertcutFirst=Pattern.compile("<num>(?s)(.+?)Narrative:");
-         docFile=new File("D:\\results.txt");
-        writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
+         //docFile=new File("D:\\results.txt");
+        String newLine = System.getProperty("line.separator");
+        //writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
         // in case we get a file of more then one query
         try {
             breakToQuerysFile(pathToQueryFile);
@@ -65,19 +75,26 @@ public class Searcher {
                 p.parseDoc(que.getQueryText(),true);
                 queryTerms=  new HashMap<>(p.m_terms);
                 sizeofQuery=queryTerms.size();
+                //rank.docsToReturn.clear();
                 rank = new Ranker(queryTerms);
-                try {
+                for(String docId: rank.docsToReturn) {
+                    docId = docId.replaceAll(" ", "");
+                    String towrite = que.getQueryID() + " 0 " + docId + " 1 1 mt" + newLine;
+                    allResults.add(towrite);
+                }
+               /* try {
                     writeToFile(que.getQueryID());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 //rank.printResults();
+                */
             }
-            try {
-                writerDocQuerys.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           // try {
+             //   writerDocQuerys.close();
+           // } catch (IOException e) {
+            //    e.printStackTrace();
+            //}
         }
     }
     private void writeToFile(String id) throws IOException {
@@ -87,6 +104,7 @@ public class Searcher {
         {
             docId=docId.replaceAll(" ","");
             String towrite=id+" 0 "+docId+" 1 1 mt"+newLine;
+            allResults.add(towrite);
             writerDocQuerys.write(towrite);
         }
     }
@@ -153,6 +171,13 @@ public class Searcher {
         String []stopwords=everything.split("\\s+");
         return  stopwords;
     }
+
+    /**
+     * This method receve path to file with queries and read all of the text as a string send to another function and intiaize
+     * Querys which is an array for all of the queries from the file
+     * @param path - path to queries file
+     * @throws IOException
+     */
     private void breakToQuerysFile(String path) throws IOException {
         StringBuffer fileData = new StringBuffer();
         BufferedReader reader = null;
@@ -174,6 +199,12 @@ public class Searcher {
         reader.close();
         Querys=getQuerysFromText(fileData.toString());
     }
+
+    /**
+     * this method takes from the text file of queries the queies itself and their number
+     * @param text- the text of the file with the queries
+     * @return - array of queries
+     */
     private ArrayList<Query> getQuerysFromText(String text)
     {
         ArrayList <String> allMatchesofQuery ;
@@ -187,7 +218,7 @@ public class Searcher {
         }
         for(String str: allMatchesofQuery)
         {
-             queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>"));
+             queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>")).replaceAll("\n","").trim();
              query=str.substring(str.indexOf("<title>")+8,str.indexOf("<desc>"));
              queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
              Query q= new Query(queryiD,query,queryDesc);

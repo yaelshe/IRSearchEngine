@@ -14,7 +14,7 @@ public class Term
     // documents the word is in and number of appearances in each
     private int totalApperance;
     public int pointer;
-    public String postingline;
+    public String postingline;//the posting line for the term , only inserted if the word appear in a query
 
     /**
      * this constructor builds the term object
@@ -28,6 +28,24 @@ public class Term
         totalApperance=1;
     }
 
+    /**
+     * constructor for terms in query
+     * @param str- term
+     * @param df- number of docs appears in
+     * @param pointer- row number in posting file for row
+     * @param line
+     */
+    public Term(String str, int df, int pointer,String line)
+    {
+        _term=str;
+        numOfDocIDF=df;
+        this.pointer=pointer;
+        this.postingline=line;
+    }
+    /**
+     * pointer to the row in the posting file that the term appear in
+     * @param pointer
+     */
     public void setPointer(int pointer) {
         this.pointer = pointer;
     }
@@ -43,14 +61,6 @@ public class Term
     public int getPointer() {
 
         return pointer;
-    }
-
-    public Term(String str, int df, int pointer,String line)
-    {
-        _term=str;
-        numOfDocIDF=df;
-        this.pointer=pointer;
-        this.postingline=line;
     }
 
     /**

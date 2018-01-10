@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.sqrt;
 
+/**
+ * This class compute and rank all of the documents that are relevent to the terms in the query
+ */
 public class Ranker {
     private String loadDocPosting="";//path to loadDocPosting
     private String loadDoclengths="";//path to loadDocPosting
@@ -24,23 +27,37 @@ public class Ranker {
                                                         //in the query and the rank for each after computing it
     public static LinkedList<String> docsToReturn;
 
-    public Ranker(HashMap<String,Term> queryTerms) {
-        System.out.println(Parse.docPosting.size()+ "size of docposting");
-        System.out.println(Indexer.m_Dictionary.size()+ "size of dictionary");
-        System.out.println(Indexer.m_Cache.size()+ "size of cache");
+    /**
+     * This is the constructor for ranking the query documents'
+     * @param queryTerms - the terms in the query
+     */
+    public Ranker(HashMap<String,Term> queryTerms)
+    {
         docsToReturn= new LinkedList<>();
         updateInfoQuery(queryTerms);
-
+        docsToReturn.clear();
         docsTermQuery= new HashMap<>();
         breakToDocsOnlyQuery();
         rankAllDocument();
         try {
+            returnDocs();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*try {
             returnDocs();//todo need to send back
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
-    public LinkedList<String> returnDocs() throws IOException {
+
+    /**
+     * this method save into docToReturn the 50 most high ranked documents after they were updated in their Double value
+     * in the map of documents
+     * @throws IOException
+     */
+    public void returnDocs() throws IOException {
         if(!docsTermQuery.isEmpty())
         {
             PriorityQueue<Map.Entry<String,Double>> pq = new PriorityQueue<>((o1, o2) ->Double.compare(o2.getValue(), o1.getValue()));
@@ -51,30 +68,14 @@ public class Ranker {
                 docsToReturn.add(pq.poll().getKey());
                 //pq.poll();
             }
-            /*List<String> sortedTerms=new ArrayList(docsTermQuery.values());
-            Collections.sort(sortedTerms);
-            for(int m=0;m<50;m++)
-            {
-                docsToReturn.put(sortedTerms.get(sortedTerms.size()-1-m),docsTermQuery.get(sortedTerms.get(sortedTerms.size()-1-m)));
-            }
-            */
-            System.out.println(docsToReturn);
-            File docFile=new File("D:\\results.txt");
-            BufferedWriter writerDoc= new BufferedWriter(new FileWriter(docFile));
-            String newLine = System.getProperty("line.separator");
-            for(String docId: docsToReturn)
-            {
-                docId=docId.replaceAll(" ","");
-                System.out.println("*"+docId+"*");
-                String towrite="351 0 "+docId+" 1 1 mt"+newLine;
-                writerDoc.write(towrite);
-            }
-            writerDoc.close();
-            return docsToReturn;
         }
-        System.out.println("no docs to return");
-        return null;
+
     }
+
+    /**
+     * This method update the Term parameter for every term   in query
+     * @param words - the words from the query
+     */
     private void updateInfoQuery(HashMap<String,Term> words)
     {
         rankQueryTerms=new HashMap<String,Term>();
@@ -94,9 +95,15 @@ public class Ranker {
    {
        for(String docId: docsTermQuery.keySet())
        {
-           docsTermQuery.put(docId,cosSim(docId)+computeBM25total(1,1,docId));//Todo add more to the cosSim formula change 1 to k and b
+           docsTermQuery.put(docId,cosSim(docId)+computeBM25total(docId));//Todo add more to the cosSim formula change 1 to k and b
        }
    }
+
+    /**
+     * compute cosSim score for the doc with query
+     * @param doc -doc id
+     * @return score of cosSim
+     */
     private double cosSim(String doc)
     {
         double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight());//TODO *SQRT Wiq
@@ -109,20 +116,7 @@ public class Ranker {
             return 0;
         }
     }
-    public void loadFiles(String path) throws IOException, ClassNotFoundException {
-        FileInputStream fi;
-        try {
-            fi = new FileInputStream(new File(path + "\\docPosting.ser"));
-            ObjectInputStream oi = new ObjectInputStream(fi);
-            Parse.docPosting=((HashMap<String,Document>) oi.readObject()) ;
-        }
-        catch(Exception e)
-        {
-            System.out.println("not load ranker row 31");
-        }
 
-
-    }
     public static String getLineFromPostingFile(int lineNumber){
         try (Stream<String> lines = Files.lines(Paths.get(pathToPosting))) {
             return lines.skip(lineNumber).findFirst().get();
@@ -246,6 +240,12 @@ public class Ranker {
         }
         return d;
     }
+
+    /**
+     * compute the bm25 first part of idf
+     * @param df
+     * @return
+     */
     private double computeIDFbm25(double df)
     {
         double ans=0;
@@ -254,6 +254,13 @@ public class Ranker {
         ans= log(ans);//TODO CHECK IN WHICH LOG NEED TO BE DONE
         return ans;
     }
+
+    /**
+     * compute the bm25 SecondPart of the formula
+     * @param freqTerm
+     * @param docLength
+     * @return
+     */
     private double computebm25SecondPart(double freqTerm, int docLength)
     {
         double ans=0;
@@ -261,7 +268,13 @@ public class Ranker {
         ans=ans/(freqTerm+k*(1-b+(b*(avgDoc/(double)docLength))));
         return ans;
     }
-    private double computeBM25total(double k,double b,String docId)
+
+    /**
+     * this method compute the bm25 for the doc sent to the function
+     * @param docId -doc id
+     * @return the bm25 score
+     */
+    private double computeBM25total(String docId)
     {
         double answer=0;
         for(String term:rankQueryTerms.keySet())

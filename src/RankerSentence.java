@@ -17,10 +17,11 @@ public class RankerSentence {
     private double TFij=0;
     private double IDF=0;
     /**
-     * this method compute the wij in mone for word in query and specific document
-     * @param allterms the terms in all text
-     * @param allsentence map for maps for the term in the sentence
-     * @return
+     *
+     * @param allsentence the terms in all the text
+     * @param allterms map for maps for the term in the sentence
+     * @param lengthofsentence array of the length of each sentence
+     *  sentenceWeight::array of the weight of each sentence
      */
     public RankerSentence(HashMap allsentence,HashMap allterms,int[] lengthofsentence) {
         this.AllSentence=new HashMap<>(allsentence);
@@ -32,6 +33,9 @@ public class RankerSentence {
         RankTheSentence();
     }
 
+    /**
+     * function that goes all over the terms in the sentences, and returns the weight of each sentence and put it in SentenceWeight
+     */
     private void RankTheSentence() {
         for (HashMap sen: AllSentence.values())
         {
@@ -53,6 +57,10 @@ public class RankerSentence {
 
     }
 
+    /**
+     * function that returns a list of the IDs of the five sentences that has the most haviest wehights, while this list is sorted according to the weights
+     * @return
+     */
     public List TopFive(){
         List<Integer> top5= new ArrayList<Integer>();
 
