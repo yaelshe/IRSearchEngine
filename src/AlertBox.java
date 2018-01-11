@@ -2,6 +2,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,14 +23,17 @@ public class AlertBox {
         //Block events to other windows
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
-        window.setMinWidth(300);
+        window.setMinWidth(350);
 
         Label label = new Label();
         label.setText(message);
         Button closeButton = new Button("Close this window");
         closeButton.setOnAction(e -> window.close());
+        //TextArea consoleTextArea = new TextArea();
+        //consoleTextArea.setScrollLeft(1.5);
 
-        VBox layout = new VBox(10);
+
+        VBox layout = new VBox(20);
         layout.getChildren().addAll(label, closeButton);
         layout.setAlignment(Pos.CENTER);
 

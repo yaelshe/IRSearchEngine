@@ -16,15 +16,11 @@ public class Searcher {
     HashMap<String,Term> queryTerms;
     Ranker rank;
     public static Map<String,String> stopwords;
-    String pathToDocFile="D:\\DOCS.txt";
-    public static Map<String,TermDic> m_Dictionary;
     int sizeofQuery;
     private ArrayList<Query> Querys;
-    private Pattern queryCut;//<title><desc>
     private Pattern quertcutFirst;
-    BufferedWriter writerDocQuerys;
-    File docFile;
     public static ArrayList<String> allResults;
+    public static ArrayList<String> docsToDisplay;
 
     //TODO need to change the path to a file inside the project
 
@@ -37,6 +33,7 @@ public class Searcher {
     public Searcher(String query,boolean stemming) {
         createMapStopWords();
         allResults=new ArrayList<>();
+
         p= new Parse(stopwords, stemming);//stemming instead of true
         p.parseDoc(query,true);
         queryTerms=  new HashMap<>(p.m_terms);
@@ -51,17 +48,12 @@ public class Searcher {
     }
     public Searcher(boolean stemming,String pathToQueryFile) throws IOException {
         createMapStopWords();
+        docsToDisplay=new ArrayList<>();
         allResults=new ArrayList<>();
         p= new Parse(stopwords, stemming);
         Querys= new ArrayList<>();
-        //queryTerms=  new HashMap<>(p.m_terms);
-        //sizeofQuery=queryTerms.size();
-        queryCut=Pattern.compile("<title>(?s)(.+?)<desc>");
         quertcutFirst=Pattern.compile("<num>(?s)(.+?)Narrative:");
-         //docFile=new File("D:\\results.txt");
         String newLine = System.getProperty("line.separator");
-        //writerDocQuerys= new BufferedWriter(new FileWriter(docFile));
-        // in case we get a file of more then one query
         try {
             breakToQuerysFile(pathToQueryFile);
         } catch (IOException e) {
@@ -77,35 +69,15 @@ public class Searcher {
                 sizeofQuery=queryTerms.size();
                 //rank.docsToReturn.clear();
                 rank = new Ranker(queryTerms);
+                docsToDisplay.add("*****Query number: "+que.getQueryID()+"******");
+                docsToDisplay.add("***We found "+rank.docsToReturn.size()+ " relevant documents***");
                 for(String docId: rank.docsToReturn) {
                     docId = docId.replaceAll(" ", "");
                     String towrite = que.getQueryID() + " 0 " + docId + " 1 1 mt" + newLine;
+                    docsToDisplay.add(docId);
                     allResults.add(towrite);
                 }
-               /* try {
-                    writeToFile(que.getQueryID());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //rank.printResults();
-                */
             }
-           // try {
-             //   writerDocQuerys.close();
-           // } catch (IOException e) {
-            //    e.printStackTrace();
-            //}
-        }
-    }
-    private void writeToFile(String id) throws IOException {
-
-        String newLine = System.getProperty("line.separator");
-        for(String docId: rank.docsToReturn)
-        {
-            docId=docId.replaceAll(" ","");
-            String towrite=id+" 0 "+docId+" 1 1 mt"+newLine;
-            allResults.add(towrite);
-            writerDocQuerys.write(towrite);
         }
     }
     /**
@@ -129,11 +101,11 @@ public class Searcher {
     }
 
     /**
-     * this
+     * this method initiate the process to build the stopwords list
      */
     public static void createMapStopWords()
     {
-        String pathofstopword="C:\\Users\\sheinbey\\Downloads\\stop_words.txt";
+        String pathofstopword=GuiPartB.pathToLoad+"\\stop_words.txt";
         //TODO CHANGE PATH TO STOPWORDS
         String []stops=(readStopword(pathofstopword));
         stopwords = new HashMap<>();

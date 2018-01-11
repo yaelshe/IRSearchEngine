@@ -14,15 +14,12 @@ import static java.lang.StrictMath.sqrt;
  * This class compute and rank all of the documents that are relevent to the terms in the query
  */
 public class Ranker {
-    private String loadDocPosting="";//path to loadDocPosting
-    private String loadDoclengths="";//path to loadDocPosting
-    //public static HashMap<String,Document> docPosting;
     private HashMap<String,Term> rankQueryTerms;
-    public static String pathToPosting="C:\\Users\\sheinbey\\Downloads\\finalPosting.txt";//todo add path to posting
+    public static String pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";//todo add path to posting
     public static final int N=472525;//468370
     public static int avgDoc=70;
-    public static final double k=1.4;
-    public static final double b=0.75;
+    private static final double k=1.4;
+    private static final double b=0.75;
     public HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
                                                         //in the query and the rank for each after computing it
     public static LinkedList<String> docsToReturn;
@@ -44,12 +41,6 @@ public class Ranker {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*try {
-            returnDocs();//todo need to send back
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     /**
@@ -66,7 +57,6 @@ public class Ranker {
             }
             for(int m=0;m<50&&m<pq.size();m++){
                 docsToReturn.add(pq.poll().getKey());
-                //pq.poll();
             }
         }
 
@@ -81,7 +71,7 @@ public class Ranker {
         rankQueryTerms=new HashMap<String,Term>();
         for( String str: words.keySet())
         {
-            TermDic t= Indexer.m_Dictionary.get(str);
+            TermDic t= Indexer.m_Dictionary.get(str);//todo check null pointer exception
             if(t==null)
                 continue;
             int pointer=t.getPointer();
@@ -95,7 +85,7 @@ public class Ranker {
    {
        for(String docId: docsTermQuery.keySet())
        {
-           docsTermQuery.put(docId,cosSim(docId)+computeBM25total(docId));//Todo add more to the cosSim formula change 1 to k and b
+           docsTermQuery.put(docId,cosSim(docId)+computeBM25total(docId));
        }
    }
 

@@ -16,7 +16,7 @@ public class Document implements Serializable
     public String mostCommWord;
     public final String id ;
     public double docWeight;
-    public String directoryPathDoc;//Todo need to add through readFile
+    public String directoryPathDoc;
     private static final long serialVersionUID = -4985806624272702150L;
 
 
