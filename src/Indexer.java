@@ -64,8 +64,8 @@ public class Indexer
         Collections.sort(sortedTerms);
         for( String s: sortedTerms)
         {
-            if(mp_terms.get(s).getTotalApperance()<2)
-                continue;
+           // if(mp_terms.get(s).getTotalApperance()<2)
+            //    continue;
             if(m_Dictionary.containsKey(s))
             {
                 //TermDic t = m_Dictionary.get(s);

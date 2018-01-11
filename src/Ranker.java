@@ -17,7 +17,7 @@ public class Ranker {
     private HashMap<String,Term> rankQueryTerms;
     public static String pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";//todo add path to posting
     public static final int N=472525;//468370
-    public static int avgDoc=70;
+    public static int avgDoc=70;//70
     private static final double k=1.4;
     private static final double b=0.75;
     public HashMap<String,Double> docsTermQuery;// save all the documents that are relevant to the terms
@@ -76,7 +76,7 @@ public class Ranker {
                 continue;
             int pointer=t.getPointer();
             int df=t.getNumOfDocs();
-            String line=getLineFromPostingFile(pointer);
+            String line=getLineFromFile(pointer);
             Term term= new Term(str,df,pointer,line);
             rankQueryTerms.put(str,term);
         }
@@ -96,7 +96,7 @@ public class Ranker {
      */
     private double cosSim(String doc)
     {
-        double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight());//TODO *SQRT Wiq
+        double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight())*sqrt(rankQueryTerms.size());//TODO *SQRT Wiq
         double mone= sumWijMone(doc);//*weight of terms in query; todo
         if (docWeight!=0)
             return mone/docWeight;
@@ -181,15 +181,15 @@ public class Ranker {
      * this method return the line form file
      * start the counet of line from 0 !!!!!!!!!!!!!
      * @param lineNumber -line number in file (pointer)
-     * @param pathToFile - the string path to specific file
+     *
      * @return the line from the file of the row by the lineNumber
      */
-    public static String getLineFromFile(int lineNumber,String pathToFile)
+    public static String getLineFromFile(int lineNumber)
     {//https://stackoverflow.com/questions/2312756/how-to-read-a-specific-line-using-the-specific-line-number-from-a-file-in-java/38229581
         String lineIWant="";
         FileInputStream fs = null;
         try {
-            fs = new FileInputStream("someFile.txt");
+            fs = new FileInputStream(pathToPosting);
             //TODO NEED TO CHANGE IN BRACKETS TO pathToFile
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(fs));
