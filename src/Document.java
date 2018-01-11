@@ -19,7 +19,6 @@ public class Document implements Serializable
     public String directoryPathDoc;
     private static final long serialVersionUID = -4985806624272702150L;
 
-
     /**
      * this is the constructor that initialize the fields for the document object.
      * @param id- name of document

@@ -338,7 +338,7 @@ public class GuiPartB extends Application {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.showSaveDialog(null);
         String path;
-        String filename = chooser.getSelectedFile().getName();
+        //String filename = chooser.getSelectedFile().getName();
         try {
             path = chooser.getSelectedFile().getAbsolutePath();
             s = path;
@@ -356,25 +356,30 @@ public class GuiPartB extends Application {
      * @param pathToFile- path to the file with the queries
      */
     private void runQueryFiles(boolean stem, String pathToFile) {
-        if (!pathToFile.equals("")) {
-            long startTime = System.currentTimeMillis();
-            Searcher s;
-            {//handle query inserted
-                try {
-                    s = new Searcher(stem, pathToFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if(load) {
+            if (!pathToFile.equals("")) {
+                long startTime = System.currentTimeMillis();
+                Searcher s;
+                {//handle query inserted
+                    try {
+                        s = new Searcher(stem, pathToFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    long endTime = System.currentTimeMillis();
+                    totalTime = endTime - startTime;
+                    System.out.println(totalTime / 1000 / 60);
+                    displayMultiQuery(Searcher.docsToDisplay);
                 }
-                long endTime = System.currentTimeMillis();
-                totalTime = endTime - startTime;
-                System.out.println(totalTime / 1000 / 60);
-                displayMultiQuery(Searcher.docsToDisplay);
+                AlertBox boxResults = new AlertBox();
+                boxResults.display("Alert", "done with all the queries");
+            } else {
+                AlertBox boxResults = new AlertBox();
+                boxResults.display("Alert", "no path to file with queries inserted");
             }
-            AlertBox boxResults = new AlertBox();
-            boxResults.display("Alert", "done with all the queries");
-        } else {
-            AlertBox boxResults = new AlertBox();
-            boxResults.display("Alert", "no path to file with queries inserted");
+        }
+        else{
+            AlertBox.display("Alert", "Error: no files and structures has been loaded!");
         }
     }
 
