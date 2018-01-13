@@ -223,7 +223,7 @@ public class Indexer
      *
      * @return -
      * @throws IOException -
-     *///TODO how i save diffrent postion for non stemming???
+     */
     public void mergeTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
         //create the dictionary and cache
@@ -586,7 +586,6 @@ public class Indexer
     {
         ArrayList<String> allMatchesofdoc ;
         String regex = "\\{(?s)(.+?)\\}";
-        //TODO make the pattern static and compiled once
         allMatchesofdoc = new ArrayList<String>();
         Matcher m = Pattern.compile(regex).matcher(line);
         while (m.find()) {
@@ -650,7 +649,7 @@ public class Indexer
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }//TODO change the pointer from the dictionary to cache if the word is in the cache
+        }
         if (m_Cache.containsKey(s)) {
             m_Cache.get(s).setPointer(counterLine);
             m_Cache.get(s).setFavDocs(findTheDocs(line));

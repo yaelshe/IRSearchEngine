@@ -15,8 +15,8 @@ import static java.lang.StrictMath.sqrt;
  */
 public class Ranker {
     private HashMap<String,Term> rankQueryTerms;
-    public static String pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";//todo add path to posting
-    public static final int N=472525;//468370
+    //public static String pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";
+    public static final int N=468370;//468370  472525
     public static int avgDoc=70;//70
     private static final double k=1.4;
     private static final double b=0.75;
@@ -71,12 +71,35 @@ public class Ranker {
         rankQueryTerms=new HashMap<String,Term>();
         for( String str: words.keySet())
         {
-            TermDic t= Indexer.m_Dictionary.get(str);//todo check null pointer exception
-            if(t==null)
-                continue;
-            int pointer=t.getPointer();
-            int df=t.getNumOfDocs();
-            String line=getLineFromFile(pointer);
+            TermCache tc;
+            String line;
+            int pointer,df;
+            if(Indexer.m_Cache.containsKey(str)) {
+                tc = Indexer.m_Cache.get(str);
+                pointer = tc.getPointer();
+                line = getLineFromPostingFile(pointer);
+                String temp = line.substring(line.indexOf('#'),line.indexOf('&'));
+                temp=temp.replaceAll(" ","");
+                try {
+                    df= Integer.parseInt(temp);
+                }
+                catch (Exception e)
+                {
+                    TermDic t = Indexer.m_Dictionary.get(str);
+                    df = t.getNumOfDocs();
+                }
+
+
+
+            }
+            else {
+                TermDic t = Indexer.m_Dictionary.get(str);
+                if (t == null)
+                    continue;
+                pointer = t.getPointer();
+                df = t.getNumOfDocs();
+                line = getLineFromPostingFile(pointer);
+            }
             Term term= new Term(str,df,pointer,line);
             rankQueryTerms.put(str,term);
         }
@@ -96,8 +119,8 @@ public class Ranker {
      */
     private double cosSim(String doc)
     {
-        double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight())*sqrt(rankQueryTerms.size());//TODO *SQRT Wiq
-        double mone= sumWijMone(doc);//*weight of terms in query; todo
+        double docWeight=sqrt(Parse.docPosting.get(doc).getDocWeight())*sqrt(rankQueryTerms.size());
+        double mone= sumWijMone(doc);
         if (docWeight!=0)
             return mone/docWeight;
         else
@@ -108,7 +131,7 @@ public class Ranker {
     }
 
     public static String getLineFromPostingFile(int lineNumber){
-        try (Stream<String> lines = Files.lines(Paths.get(pathToPosting))) {
+        try (Stream<String> lines = Files.lines(Paths.get(Searcher.pathToPosting))) {
             return lines.skip(lineNumber).findFirst().get();
         } catch (IOException e){
             e.printStackTrace();
@@ -154,7 +177,6 @@ public class Ranker {
     {
         HashMap <String,Double> allMatchesofdoc ;
         String regex = "\\{(?s)(.+?)\\:";
-        //TODO make the pattern static and compiled once
         allMatchesofdoc = new HashMap <String,Double>();
         Matcher m = Pattern.compile(regex).matcher(line);
         while (m.find()) {
@@ -172,11 +194,17 @@ public class Ranker {
     {
         double sumWij=0;
         for (String term: rankQueryTerms.keySet()) {
-            sumWij=+wijQueryWordDoc(term,doc);
+            sumWij=sumWij+(wijQueryWordDoc(term,doc)*isTerminDoc(term,doc));
         }
         return sumWij;
     }
-
+    private int isTerminDoc(String term, String doc)
+    {
+       if(rankQueryTerms.get(term).getPostingline().indexOf(doc)==-1)
+            return 0;
+        else
+             return 1;
+    }
     /**
      * this method return the line form file
      * start the counet of line from 0 !!!!!!!!!!!!!
@@ -189,8 +217,7 @@ public class Ranker {
         String lineIWant="";
         FileInputStream fs = null;
         try {
-            fs = new FileInputStream(pathToPosting);
-            //TODO NEED TO CHANGE IN BRACKETS TO pathToFile
+            fs = new FileInputStream(Searcher.pathToPosting);
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(fs));
                 if (lineNumber == 0) {
@@ -241,7 +268,7 @@ public class Ranker {
         double ans=0;
         ans= (double)N-df+0.5;
         ans=ans/(df+0.5);
-        ans= log(ans);//TODO CHECK IN WHICH LOG NEED TO BE DONE
+        ans= log(ans);
         return ans;
     }
 

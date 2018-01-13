@@ -129,7 +129,7 @@ public class GuiPartB extends Application {
         //browse query file  button
         Button queryFileBrowse = new Button("browse");
         GridPane.setConstraints(queryFileBrowse, 2, 2);
-        queryFileBrowse.setOnAction(e -> browserQueryFile());//TODO ADD FUNCTION TO QUERY FILE
+        queryFileBrowse.setOnAction(e -> browserQueryFile());
 
         //RESET
         Button resetButton = new Button("RESET");

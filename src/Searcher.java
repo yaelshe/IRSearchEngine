@@ -21,6 +21,7 @@ public class Searcher {
     private Pattern quertcutFirst;
     public static ArrayList<String> allResults;
     public static ArrayList<String> docsToDisplay;
+    public static String pathToPosting;
 
     //TODO need to change the path to a file inside the project
 
@@ -33,7 +34,10 @@ public class Searcher {
     public Searcher(String query,boolean stemming) {
         createMapStopWords();
         allResults=new ArrayList<>();
-
+        if(!stemming)
+            pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";
+        else
+            pathToPosting=GuiPartB.pathToLoad+"\\finalPostingWithStem.txt";
         p= new Parse(stopwords, stemming);//stemming instead of true
         p.parseDoc(query,true);
         queryTerms=  new HashMap<>(p.m_terms);
@@ -48,6 +52,10 @@ public class Searcher {
     }
     public Searcher(boolean stemming,String pathToQueryFile) throws IOException {
         createMapStopWords();
+        if(!stemming)
+            pathToPosting=GuiPartB.pathToLoad+"\\finalPosting.txt";
+        else
+            pathToPosting=GuiPartB.pathToLoad+"\\finalPostingWithStem.txt";
         docsToDisplay=new ArrayList<>();
         allResults=new ArrayList<>();
         p= new Parse(stopwords, stemming);

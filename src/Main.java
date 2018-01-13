@@ -39,13 +39,13 @@ public class Main {
         String queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>"));
         String query=str.substring(str.indexOf("<title>")+8,str.indexOf("<desc>"));
         String queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
-        System.out.println(queryiD.trim() + "  id");
-        System.out.println(query.trim()+ "  the query");
-        System.out.println(queryDesc.trim()+ " the desc");
+        //System.out.println(queryiD.trim() + "  id");
+        //System.out.println(query.trim()+ "  the query");
+        //System.out.println(queryDesc.trim()+ " the desc");
         //ArrayList <String> arr= breakToDocsFrequ(line);
         String s="";
         HashMap<String,Integer> sentences= new HashMap<>();
-
+        returnDocs();
         /*ArrayList<String> querys=new ArrayList<String> (getQuerysFromText(s));
         String sq=querys.get(2);
         System.out.println(querys);
@@ -183,7 +183,6 @@ public class Main {
     {
         ArrayList <String> allMatchesofQuery ;
         String regex = "<title>(?s)(.+?)<desc>";
-        //TODO make the pattern static and compiled once
         allMatchesofQuery = new ArrayList <String>();
         Matcher m = Pattern.compile(regex).matcher(text);
         while (m.find()) {
@@ -191,11 +190,29 @@ public class Main {
         }
         return allMatchesofQuery;
     }
+
+    public static void returnDocs() throws IOException {
+        HashMap<String,Double> docsTermQuery=new HashMap<>();
+        docsTermQuery.put("ss",1.5);
+        docsTermQuery.put("er",34.555);
+        docsTermQuery.put("fff",1.55);
+        docsTermQuery.put("ffw",1.5);
+            PriorityQueue<Map.Entry<String,Double>> pq = new PriorityQueue<>((o1, o2) ->Double.compare(o2.getValue(), o1.getValue()));
+            for (Map.Entry<String,Double> d:docsTermQuery.entrySet()){
+                pq.add(d);
+            }
+            for(int m=0;m<5 &&m<pq.size();m++){
+                System.out.println(pq.peek().getKey());
+                pq.poll();
+            }
+
+
+    }
     private static HashMap <String,String>breakToDocsId(String line)
     {
         HashMap <String,String> allMatchesofdoc ;
         String regex = "\\{(?s)(.+?)\\:";
-        //TODO make the pattern static and compiled once
+
         allMatchesofdoc = new HashMap <String,String>();
         Matcher m = Pattern.compile(regex).matcher(line);
         while (m.find()) {
