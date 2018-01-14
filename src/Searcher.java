@@ -74,7 +74,6 @@ public class Searcher {
                 p.m_terms.clear();
                 p.parseDoc(que.getQueryText(),true);
                 queryTerms=  new HashMap<>(p.m_terms);
-                sizeofQuery=queryTerms.size();
                 //rank.docsToReturn.clear();
                 rank = new Ranker(queryTerms);
                 docsToDisplay.add("*****Query number: "+que.getQueryID()+"******");
@@ -89,32 +88,11 @@ public class Searcher {
         }
     }
     /**
-     * this method compute the weight of each term in the query
-     * @return the weight of the term in the query
-     */
-    private double computeWiQ(String term)
-    {
-
-        return 0.0;
-    }
-
-    /**
-     * this method compute the weight of the term in a document
-     * @return
-     */
-    private double computeWiD(String term, String doc)
-    {
-
-        return 0.0;
-    }
-
-    /**
      * this method initiate the process to build the stopwords list
      */
     public static void createMapStopWords()
     {
         String pathofstopword=GuiPartB.pathToLoad+"\\stop_words.txt";
-        //TODO CHANGE PATH TO STOPWORDS
         String []stops=(readStopword(pathofstopword));
         stopwords = new HashMap<>();
         for(int i=0;i<stops.length;i++)
@@ -200,7 +178,8 @@ public class Searcher {
         {
              queryiD=str.substring(str.indexOf("Number:")+8,str.indexOf("<title>")).replaceAll("\n","").trim();
              query=str.substring(str.indexOf("<title>")+8,str.indexOf("<desc>"));
-             queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
+             //queryDesc=str.substring(str.indexOf("Description:")+12,str.indexOf("<narr>"));
+            queryDesc="";
              Query q= new Query(queryiD,query,queryDesc);
              a.add(q);
         }

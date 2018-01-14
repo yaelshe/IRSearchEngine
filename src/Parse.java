@@ -57,14 +57,6 @@ public class Parse
         removeapo= Pattern.compile("[\\']");
         removeAll=Pattern.compile("[^\\w && [^.%$]]+");// added the percent back and the dollar
         removeTags=Pattern.compile("<(.*?)>");
-        try{
-            docFile=new File("D:\\PartB+"+"DOCS.txt");
-            writerDoc= new BufferedWriter(new FileWriter(docFile));
-        }
-        catch (IOException e) {
-            System.out.println("path do docs file not found Parse class constructor line 58");
-            e.printStackTrace();
-        }
 
     }
 
@@ -86,13 +78,6 @@ public class Parse
             duc.setDocLength(docCounterWords);
             docPosting.put(currDoc,duc);
             count++;
-            try {
-                writerDoc.write(currDoc+" #"+docCounterWords+newLine);
-                //countLinePostingDoc++;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //duc.setLengh(docCounterWords); this line if we keep data base for documents instead of file
             docCounterWords=0;
         }
         System.out.println(count+"counter for docs =============================");
