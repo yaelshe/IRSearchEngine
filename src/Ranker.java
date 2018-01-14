@@ -77,7 +77,7 @@ public class Ranker {
             if(Indexer.m_Cache.containsKey(str)) {
                 tc = Indexer.m_Cache.get(str);
                 pointer = tc.getPointer();
-                line = getLineFromPostingFile(pointer);
+                line = getLineFromFile(pointer);
                 String temp = line.substring(line.indexOf('#'),line.indexOf('&'));
                 temp=temp.replaceAll(" ","");
                 try {
@@ -88,9 +88,6 @@ public class Ranker {
                     TermDic t = Indexer.m_Dictionary.get(str);
                     df = t.getNumOfDocs();
                 }
-
-
-
             }
             else {
                 TermDic t = Indexer.m_Dictionary.get(str);
@@ -98,7 +95,7 @@ public class Ranker {
                     continue;
                 pointer = t.getPointer();
                 df = t.getNumOfDocs();
-                line = getLineFromPostingFile(pointer);
+                line = getLineFromFile(pointer);
             }
             Term term= new Term(str,df,pointer,line);
             rankQueryTerms.put(str,term);
