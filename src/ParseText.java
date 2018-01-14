@@ -72,19 +72,28 @@ public class ParseText
         l.add("Col");
         String []mysentence1=mytextdoc.split("\\. ");
         String s1,s2;
+        s1="";
         this.mysentence= new ArrayList<>();
         for(int ii=0;ii<mysentence1.length;ii++){
-            s1=mysentence1[ii].substring(mysentence1[ii].length()-3);
+            //System.out.println(ii+"."+mysentence1[ii]);
+            if (mysentence1[ii].length()-3>0) {
+                s1 = mysentence1[ii].substring(mysentence1[ii].length() - 3);
+            }
             //System.out.println(ii+"."+s15);
             if(l.contains(s1)){
                 if (ii+1<mysentence1.length) {
                     s2 = mysentence1[ii] + mysentence1[ii + 1];
                     mysentence.add(s2);
+                    // System.out.println(ii+"."+mysentence.get(ii));
                     ii++;
                 }
+            }else {
+                mysentence.add(mysentence1[ii]);
+                // System.out.println(ii+"."+mysentence.get(ii));
             }
             //System.out.println(ii+"."+mysentence1[ii]);
         }
+        //System.out.println("MYSENTENCESIZE:"+mysentence.size());
         //
         //List<String> lnew=new ArrayList<>();
         //String []mysentence=mytextdoc.split("\\. ");
@@ -524,7 +533,7 @@ public class ParseText
         }
         return str;
     }
-    //*******
+    //***
 
     /**
      * this string handle words that appeared with a Capital letter and check for the words after it
@@ -570,5 +579,5 @@ public class ParseText
         }
         return count;
     }
-//************was changed
+//******was changed
 }

@@ -63,19 +63,24 @@ public class RankerSentence {
      */
     public List TopFive(){
         List<Integer> top5= new ArrayList<Integer>();
-
+        //System.out.println("ss"+SentenceWeight.length);
         for(int j=0;j<5&&j<SentenceWeight.length;j++) {
             double max=0;
             int idmax=-1;
             for (int i = 0; i < SentenceWeight.length; i++) {
                 if (!top5.contains(i + 1)) {
+                    //System.out.println(SentenceWeight[i]);
+
                     if (SentenceWeight[i] > max) {
                         max = SentenceWeight[i];
                         idmax = i + 1;
                     }
                 }
             }
-            top5.add(idmax);
+            if (idmax>=0&&idmax<SentenceWeight.length+1) {
+                //System.out.println(idmax);
+                top5.add(idmax);
+            }
         }
         return top5;
 

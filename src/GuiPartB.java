@@ -185,7 +185,7 @@ public class GuiPartB extends Application {
                     long endTime = System.currentTimeMillis();
                     totalTime = endTime - startTime;
                     System.out.println(totalTime / 1000 / 60);
-                    displaySingleQuery(Ranker.docsToReturn);
+                    displaySingleQuery(query,Ranker.docsToReturn);
                 }
                 else
                 {//handle docnumber inserted return 5 most important sentences
@@ -459,13 +459,14 @@ public class GuiPartB extends Application {
 
     }
 
-    public void displaySingleQuery(List<String> results)
+    public void displaySingleQuery(String query,List<String> results)
     {
     singleQuery =new ListView<>();
     //dictionary.setItems(getDictionaryTermGui());
     ObservableList<String> docsSingleQuery = FXCollections.observableArrayList();
         docsSingleQuery.add(("we found " + results.size() + " relevent documents"));
-        docsSingleQuery.add(("Running query time: " + totalTime/1000/60 +"min"));
+        docsSingleQuery.add(("the query: " + query));
+        docsSingleQuery.add(("Running query time: " + totalTime/1000 +"sec"));
         for(int i=0; i<results.size();i++)
         {
             String str=results.get(i);
